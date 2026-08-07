@@ -58,7 +58,12 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
         this.mediaPlayerService.PlaybackPositionChanged += this.MediaPlayerService_PlaybackPositionChanged;
         this.mediaPlayerService.PlaybackStateChanged += this.MediaPlayerService_PlaybackStateChanged;
         this.mediaPlayerService.PlaylistUpdated += this.MediaPlayerService_PlaylistUpdated;
+        this.mediaPlayerService.DiscLoading += this.MediaPlayerService_DiscLoading;
+        this.mediaPlayerService.DiscLoaded += this.MediaPlayerService_DiscLoaded;
     }
+
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
 
     [ObservableProperty]
     public partial bool IsNowPlayingEnabled { get; set; }
@@ -231,6 +236,23 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
         {
             this.ErrorMessage = m.Text;
             this.IsErrorVisible = true;
+            this.IsLoading = false;
+        });
+    }
+
+    private void MediaPlayerService_DiscLoading(object? sender, EventArgs e)
+    {
+        _ = this.dispatcherQueue.TryEnqueue(() =>
+        {
+            this.IsLoading = true;
+        });
+    }
+
+    private void MediaPlayerService_DiscLoaded(object? sender, EventArgs e)
+    {
+        _ = this.dispatcherQueue.TryEnqueue(() =>
+        {
+            this.IsLoading = false;
         });
     }
 

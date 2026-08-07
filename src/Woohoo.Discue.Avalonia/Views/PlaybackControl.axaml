@@ -94,7 +94,7 @@
 
     <Grid>
         <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
-            <Grid RowDefinitions="Auto, *, Auto">
+            <Grid RowDefinitions="Auto, *, Auto, Auto">
 
                 <!--  Horizontal Divider Line  -->
                 <Rectangle
@@ -350,6 +350,13 @@
                             Content="OK" />
                     </Grid>
                 </Border>
+
+                <Grid Grid.Row="3" MinHeight="6">
+                    <ProgressBar
+                        Margin="5,0,5,2"
+                        IsIndeterminate="True"
+                        IsVisible="{Binding Playback.IsLoading, Mode=OneWay}" />
+                </Grid>
 
             </Grid>
         </Border>
