@@ -63,7 +63,7 @@ jobs:
 
     - name: Get App Version
       id: app_version
-      uses: mavrosxristoforos/get-xml-info@2.2.0
+      uses: mavrosxristoforos/get-xml-info@2.2.1
       with:
         xml-file: ${{ inputs.app-version-prop-file-path }}
         xpath: '//ApplicationVersion'
