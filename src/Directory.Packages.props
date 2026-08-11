@@ -19,15 +19,15 @@
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.251219" />
     <PackageVersion Include="CommunityToolkit.WinUI.Converters" Version="8.2.251219" />
-    <PackageVersion Include="Consolonia" Version="12.0.3.7" />
-    <PackageVersion Include="Consolonia.Fonts" Version="12.0.3.7" />
-    <PackageVersion Include="Consolonia.ManagedWindows" Version="12.0.3.7" />
+    <PackageVersion Include="Consolonia" Version="12.0.3.9" />
+    <PackageVersion Include="Consolonia.Fonts" Version="12.0.3.9" />
+    <PackageVersion Include="Consolonia.ManagedWindows" Version="12.0.3.9" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="coverlet.MTP" Version="10.0.1" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Dapper.AOT" Version="1.0.52" />
     <PackageVersion Include="FftSharp" Version="2.2.0" />
-    <PackageVersion Include="FluentIcons.Avalonia" Version="2.1.333" />
+    <PackageVersion Include="FluentIcons.Avalonia" Version="2.1.335" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
@@ -42,7 +42,7 @@
     <PackageVersion Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
     <PackageVersion Include="Microsoft.XmlSerializer.Generator" Version="10.0.9" />
     <PackageVersion Include="ppy.SDL3-CS" Version="2026.722.0" />
-    <PackageVersion Include="RichardSzalay.MockHttp" Version="7.0.0" />
+    <PackageVersion Include="RichardSzalay.MockHttp" Version="7.1.0" />
     <PackageVersion Include="ScottPlot.Avalonia" Version="5.1.59" />
     <PackageVersion Include="Serilog" Version="4.4.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />
