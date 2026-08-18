@@ -109,6 +109,11 @@ internal class NullMediaPlayerService : IMediaPlayerService
         throw new NotImplementedException();
     }
 
+    public void SeekTo(TimeSpan span)
+    {
+        throw new NotImplementedException();
+    }
+
     public void SeekForward(TimeSpan span)
     {
         throw new NotImplementedException();

@@ -134,6 +134,8 @@ public sealed class MediaPlayerService : IMediaPlayerService
 
     public void SeekBackward(TimeSpan span) => this.player.SeekBackward(span);
 
+    public void SeekTo(TimeSpan span) => this.player.SeekTo(span);
+
     public void Play(Guid trackId) => this.player.Play(trackId);
 
     public async Task LoadFromFileAsync(string albumFilePath, CancellationToken cancellationToken)

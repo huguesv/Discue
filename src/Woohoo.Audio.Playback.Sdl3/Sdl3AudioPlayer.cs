@@ -234,8 +234,8 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
 
         lock (this.bufferLock)
         {
-            int skipTime = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
-            this.fileDataIndex = Math.Max(0, this.fileDataIndex - skipTime);
+            int offset = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
+            this.fileDataIndex = AdjustDataIndex(Math.Max(0, this.fileDataIndex - offset));
             this.fileStream?.Seek(this.fileDataIndex, SeekOrigin.Begin);
         }
     }
@@ -246,8 +246,20 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
 
         lock (this.bufferLock)
         {
-            int skipTime = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
-            this.fileDataIndex = Math.Min(this.fileDataLength, this.fileDataIndex + skipTime);
+            int offset = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
+            this.fileDataIndex = AdjustDataIndex(Math.Min(this.fileDataLength, this.fileDataIndex + offset));
+            this.fileStream?.Seek(this.fileDataIndex, SeekOrigin.Begin);
+        }
+    }
+
+    public void SeekTo(TimeSpan span)
+    {
+        this.VerifyDeviceNotNull();
+
+        lock (this.bufferLock)
+        {
+            int offset = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
+            this.fileDataIndex = AdjustDataIndex(offset);
             this.fileStream?.Seek(this.fileDataIndex, SeekOrigin.Begin);
         }
     }
@@ -277,6 +289,12 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
         }
 
         this.IsPlaying = false;
+    }
+
+    private static int AdjustDataIndex(int index)
+    {
+        // Ensure proper index alignment for audio data
+        return index / (Channels * FormatSizeInBytes) * (Channels * FormatSizeInBytes);
     }
 
     private void Initialize()

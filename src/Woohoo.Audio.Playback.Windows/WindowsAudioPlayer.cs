@@ -180,6 +180,11 @@ public sealed class WindowsAudioPlayer : IAudioPlayer
         this.mediaPlayer.PlaybackSession.Position -= span;
     }
 
+    public void SeekTo(TimeSpan span)
+    {
+        this.mediaPlayer.PlaybackSession.Position = span;
+    }
+
     public void Play(Guid trackId)
     {
         var mediaItem = this.guidToMediaItemMap[trackId];

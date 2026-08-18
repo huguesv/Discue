@@ -32,11 +32,13 @@
                     <Slider
                         Grid.Column="1"
                         VerticalAlignment="Center"
-                        IsEnabled="{x:Bind ViewModel.IsNowPlayingEnabled, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.IsSeekEnabled, Mode=OneWay}"
                         IsTapEnabled="False"
+                        IsThumbToolTipEnabled="False"
                         Maximum="1"
                         Minimum="0"
-                        Value="{x:Bind ViewModel.CurrentTrackPositionAsDouble, Mode=OneWay}" />
+                        StepFrequency="0.01"
+                        Value="{x:Bind ViewModel.CurrentTrackPositionAsDouble, Mode=TwoWay}" />
                     <TextBlock
                         Grid.Column="2"
                         Margin="20,0"

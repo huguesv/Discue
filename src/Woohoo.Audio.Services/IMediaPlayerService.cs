@@ -71,5 +71,7 @@ public interface IMediaPlayerService
 
     void SeekBackward(TimeSpan span);
 
+    void SeekTo(TimeSpan span);
+
     void Shutdown();
 }

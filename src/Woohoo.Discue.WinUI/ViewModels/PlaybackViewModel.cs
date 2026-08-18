@@ -23,6 +23,8 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
     private readonly ILogger logger;
     private readonly IDispatcherQueue dispatcherQueue;
 
+    private bool ignorePositionChanges = false;
+
     public PlaybackViewModel(
         IDispatcherQueueService dispatcherQueueService,
         IMediaPlayerService mediaPlayerService,
@@ -70,6 +72,9 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
 
     [ObservableProperty]
     public partial bool IsNowPlayingEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSeekEnabled { get; set; }
 
     [ObservableProperty]
     public partial bool IsPlayPauseEnabled { get; set; }
@@ -149,10 +154,26 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
 
     public string CurrentTrackPositionAsText => this.CurrentTrackPosition.ToString("mm\\:ss");
 
-    public double CurrentTrackPositionAsDouble =>
-        this.CurrentTrackDuration.TotalMilliseconds > 0
-            ? this.CurrentTrackPosition.TotalMilliseconds / this.CurrentTrackDuration.TotalMilliseconds
-            : 0;
+    public double CurrentTrackPositionAsDouble
+    {
+        get
+        {
+            return this.CurrentTrackDuration.TotalMilliseconds > 0
+                ? this.CurrentTrackPosition.TotalMilliseconds / this.CurrentTrackDuration.TotalMilliseconds
+                : 0;
+        }
+
+        set
+        {
+            if (this.ignorePositionChanges)
+            {
+                return;
+            }
+
+            var timeSpan = TimeSpan.FromMilliseconds(value * this.CurrentTrackDuration.TotalMilliseconds);
+            this.SeekTo(timeSpan);
+        }
+    }
 
     [ObservableProperty]
     public partial string ErrorMessage { get; set; } = string.Empty;
@@ -183,6 +204,11 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
     public void SeekForward()
     {
         this.mediaPlayerService.SeekForward(TimeSpan.FromSeconds(5));
+    }
+
+    public void SeekTo(TimeSpan value)
+    {
+        this.mediaPlayerService.SeekTo(value);
     }
 
     private async Task LoadAlbumAsync(LoadAlbumMessage message, CancellationToken cancellationToken)
@@ -262,9 +288,7 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
 
                 this.AlbumArt.ImageUrl = discMetadata?.GetPrimaryArtUrl() ?? string.Empty;
 
-                this.CurrentTrackDuration = track.Duration;
-                this.CurrentTrackPosition = this.mediaPlayerService.PlaybackPosition;
-
+                this.UpdateTrackPositionAndDuration(this.mediaPlayerService.PlaybackPosition, track.Duration);
                 this.UpdatePlaybackButtonStates();
             }
             else
@@ -274,8 +298,7 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
                 this.AlbumPerformer = string.Empty;
                 this.CurrentTrackTitle = string.Empty;
                 this.AlbumArt.ImageUrl = string.Empty;
-                this.CurrentTrackDuration = TimeSpan.Zero;
-                this.CurrentTrackPosition = TimeSpan.Zero;
+                this.UpdateTrackPositionAndDuration(TimeSpan.Zero, TimeSpan.Zero);
                 this.UpdatePlaybackButtonStates();
             }
 
@@ -287,6 +310,33 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
             this.ErrorMessage = string.Empty;
             this.IsErrorVisible = false;
         });
+    }
+
+    private void UpdateTrackPositionAndDuration(TimeSpan position, TimeSpan duration)
+    {
+        this.ignorePositionChanges = true;
+        try
+        {
+            this.CurrentTrackDuration = duration;
+            this.CurrentTrackPosition = position;
+        }
+        finally
+        {
+            this.ignorePositionChanges = false;
+        }
+    }
+
+    private void UpdateTrackPosition(TimeSpan position)
+    {
+        this.ignorePositionChanges = true;
+        try
+        {
+            this.CurrentTrackPosition = position;
+        }
+        finally
+        {
+            this.ignorePositionChanges = false;
+        }
     }
 
     private void MediaPlayerService_MetadataUpdated(object? sender, AudioPlayerTrackEventArgs e)
@@ -320,7 +370,7 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
             {
                 // Sometimes we get an exception here while quitting the app
                 // while music is playing.
-                this.CurrentTrackPosition = this.mediaPlayerService.PlaybackPosition;
+                this.UpdateTrackPosition(this.mediaPlayerService.PlaybackPosition);
             }
             catch
             {
@@ -351,5 +401,10 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
         this.PlayPauseGlyph = this.mediaPlayerService.PlaybackState == AudioPlayerStatus.Playing
             ? PauseIconBold
             : PlayIconBold;
+    }
+
+    partial void OnIsNowPlayingEnabledChanged(bool value)
+    {
+        this.IsSeekEnabled = value;
     }
 }

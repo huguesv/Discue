@@ -11,6 +11,8 @@ using System.Text;
 
 internal class ZipFolder : IFolder
 {
+    private static readonly bool ExtractFullTrackInMemory = false;
+
     private readonly ZipArchive archive;
 
     public ZipFolder(string containerPath)
@@ -118,7 +120,22 @@ internal class ZipFolder : IFolder
             throw EntryNotFound(fileName);
         }
 
-        return new ZipEntrySeekableStream(entry);
+        if (ExtractFullTrackInMemory)
+        {
+            // ZipArchive is not reliable enough to provide random seekable streams,
+            // so we copy the entry to a memory stream and return that instead.
+            var memoryStream = new MemoryStream(capacity: (int)entry.Length);
+
+            using var zipStream = entry.Open();
+            zipStream.CopyTo(memoryStream);
+            memoryStream.Position = 0;
+
+            return memoryStream;
+        }
+        else
+        {
+            return new ZipEntrySeekableStream(entry);
+        }
     }
 
     private static FileNotFoundException EntryNotFound(string fileName)

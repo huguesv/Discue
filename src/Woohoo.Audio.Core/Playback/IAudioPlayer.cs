@@ -59,6 +59,8 @@ public interface IAudioPlayer
 
     void SeekForward(TimeSpan span);
 
+    void SeekTo(TimeSpan span);
+
     void Shutdown();
 
     Task UpdateDiscMetadataAsync(Guid discId, AudioPlayerDiscMetadata metadata, CancellationToken cancellationToken);
