@@ -20,6 +20,8 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
     private readonly ILogger logger;
     private readonly IDispatcherQueue dispatcherQueue;
 
+    private bool ignorePositionChanges = false;
+
     public PlaybackViewModel(
         IDispatcherQueueService dispatcherQueueService,
         IMediaPlayerService mediaPlayerService,
@@ -67,6 +69,9 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
 
     [ObservableProperty]
     public partial bool IsNowPlayingEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSeekEnabled { get; set; }
 
     [ObservableProperty]
     public partial bool IsPlaying { get; set; }
@@ -146,10 +151,26 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
 
     public string CurrentTrackPositionAsText => this.CurrentTrackPosition.ToString("mm\\:ss");
 
-    public double CurrentTrackPositionAsDouble =>
-        this.CurrentTrackDuration.TotalMilliseconds > 0
-            ? this.CurrentTrackPosition.TotalMilliseconds / this.CurrentTrackDuration.TotalMilliseconds
-            : 0;
+    public double CurrentTrackPositionAsDouble
+    {
+        get
+        {
+            return this.CurrentTrackDuration.TotalMilliseconds > 0
+                ? this.CurrentTrackPosition.TotalMilliseconds / this.CurrentTrackDuration.TotalMilliseconds
+                : 0;
+        }
+
+        set
+        {
+            if (this.ignorePositionChanges)
+            {
+                return;
+            }
+
+            var timeSpan = TimeSpan.FromMilliseconds(value * this.CurrentTrackDuration.TotalMilliseconds);
+            this.SeekTo(timeSpan);
+        }
+    }
 
     public bool CanAdjustVolume => this.mediaPlayerService.CanAdjustVolume;
 
@@ -200,6 +221,11 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
     public void SeekForward()
     {
         this.mediaPlayerService.SeekForward(TimeSpan.FromSeconds(5));
+    }
+
+    public void SeekTo(TimeSpan value)
+    {
+        this.mediaPlayerService.SeekTo(value);
     }
 
     [RelayCommand]
@@ -285,9 +311,7 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
 
                 this.AlbumArt.ImageUrl = discMetadata?.GetPrimaryArtUrl() ?? string.Empty;
 
-                this.CurrentTrackDuration = track.Duration;
-                this.CurrentTrackPosition = this.mediaPlayerService.PlaybackPosition;
-
+                this.UpdateTrackPositionAndDuration(this.mediaPlayerService.PlaybackPosition, track.Duration);
                 this.UpdatePlaybackButtonStates();
             }
 
@@ -299,6 +323,33 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
             this.ErrorMessage = string.Empty;
             this.IsErrorVisible = false;
         });
+    }
+
+    private void UpdateTrackPositionAndDuration(TimeSpan position, TimeSpan duration)
+    {
+        this.ignorePositionChanges = true;
+        try
+        {
+            this.CurrentTrackDuration = duration;
+            this.CurrentTrackPosition = position;
+        }
+        finally
+        {
+            this.ignorePositionChanges = false;
+        }
+    }
+
+    private void UpdateTrackPosition(TimeSpan position)
+    {
+        this.ignorePositionChanges = true;
+        try
+        {
+            this.CurrentTrackPosition = position;
+        }
+        finally
+        {
+            this.ignorePositionChanges = false;
+        }
     }
 
     private void MediaPlayerService_MetadataUpdated(object? sender, AudioPlayerTrackEventArgs e)
@@ -332,7 +383,7 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
             {
                 // Sometimes we get an exception here while quitting the app
                 // while music is playing.
-                this.CurrentTrackPosition = this.mediaPlayerService.PlaybackPosition;
+                this.UpdateTrackPosition(this.mediaPlayerService.PlaybackPosition);
             }
             catch
             {
@@ -367,5 +418,10 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
     {
         this.mediaPlayerService.Volume = value;
         this.IsMuted = false;
+    }
+
+    partial void OnIsNowPlayingEnabledChanged(bool value)
+    {
+        this.IsSeekEnabled = value;
     }
 }
