@@ -21,15 +21,15 @@ public partial class VisualizationPage : ContentPage
     {
         this.InitializeComponent();
 
-        if (App.Current is not null)
-        {
-            App.Current.ActualThemeVariantChanged += this.Current_ActualThemeVariantChanged;
-        }
-
         this.visualizationProviderService = (App.Current as App)!.Host.Services.GetRequiredService<IVisualizationProviderService>();
         this.visualizationProviderService.DataAvailable += this.VisualizationProviderService_DataAvailable;
 
-        this.StylePlots();
+        this.FftPlot.Plot.DataBackground.Color = ScottPlot.Colors.Transparent;
+        this.FftPlot.Plot.FigureBackground.Color = ScottPlot.Colors.Transparent;
+        this.WavePlot.Plot.DataBackground.Color = ScottPlot.Colors.Transparent;
+        this.WavePlot.Plot.FigureBackground.Color = ScottPlot.Colors.Transparent;
+        this.BandPlot.Plot.DataBackground.Color = ScottPlot.Colors.Transparent;
+        this.BandPlot.Plot.FigureBackground.Color = ScottPlot.Colors.Transparent;
 
         this.plotPsd = new double[257];
         this.plotWave = new double[441];
@@ -88,26 +88,5 @@ public partial class VisualizationPage : ContentPage
         this.FftPlot.Refresh();
         this.WavePlot.Refresh();
         this.BandPlot.Refresh();
-    }
-
-    private void Current_ActualThemeVariantChanged(object? sender, EventArgs e)
-    {
-        this.StylePlots();
-    }
-
-    private void StylePlots()
-    {
-        var regionColor = ScottPlot.Colors.Yellow;
-        if (Application.Current?.TryGetResource("SystemRegionBrush", this.ActualThemeVariant, out var brush) == true)
-        {
-            if (brush is SolidColorBrush solidBrush)
-            {
-                regionColor = ScottPlot.Color.FromARGB(solidBrush.Color.A << 24 | solidBrush.Color.R << 16 | solidBrush.Color.G << 8 | solidBrush.Color.B);
-            }
-        }
-
-        this.FftPlot.Plot.DataBackground.Color = regionColor;
-        this.WavePlot.Plot.DataBackground.Color = regionColor;
-        this.BandPlot.Plot.DataBackground.Color = regionColor;
     }
 }
