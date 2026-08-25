@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Hugues Valois. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
-namespace Woohoo.Discue.Avalonia;
+namespace Woohoo.Discue.Avalonia.Desktop;
 
 using global::Avalonia;
 
-internal sealed class Program
+sealed class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
