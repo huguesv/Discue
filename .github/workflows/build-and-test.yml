@@ -49,7 +49,7 @@ jobs:
 
     - name: Test
       working-directory: src
-      run: dotnet test --solution ${{env.solutionFile}} --no-restore --verbosity normal --coverlet --coverlet-exclude \"[Dapper]*,[Dapper.AOT]*,[RichardSzalay.MockHttp]*\"
+      run: dotnet test --solution ${{env.solutionFile}} --no-restore --verbosity normal --coverlet --coverlet-exclude "[Dapper]*" --coverlet-exclude "[Dapper.AOT]*" --coverlet-exclude "[RichardSzalay.MockHttp]*"
 
     - name: Merge Coverage Results
       run: dotnet-coverage merge "**/coverage.cobertura.*.xml" -f cobertura -o coverage.cobertura.merged.xml
