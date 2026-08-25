@@ -4,8 +4,6 @@
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Woohoo.Audio.Playback.Windows</RootNamespace>
-    <UseWinUI>true</UseWinUI>
-    <WinUISDKReferences>false</WinUISDKReferences>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
