@@ -24,6 +24,7 @@
   <Project Path="Woohoo.Codecs/Woohoo.Codecs.csproj" />
   <Project Path="Woohoo.ConsoloniaControls.Gallery/Woohoo.ConsoloniaControls.Gallery.csproj" />
   <Project Path="Woohoo.ConsoloniaControls/Woohoo.ConsoloniaControls.csproj" />
+  <Project Path="Woohoo.Discue.Avalonia.Desktop/Woohoo.Discue.Avalonia.Desktop.csproj" />
   <Project Path="Woohoo.Discue.Avalonia/Woohoo.Discue.Avalonia.csproj" />
   <Project Path="Woohoo.Discue.Cli/Woohoo.Discue.Cli.csproj" />
   <Project Path="Woohoo.Discue.Consolonia/Woohoo.Discue.Consolonia.csproj" />

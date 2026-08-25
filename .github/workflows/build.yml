@@ -17,10 +17,10 @@ jobs:
     with:
       tag-name: ${{ github.ref_name }}
       icon-path: src/Woohoo.Discue.Avalonia/Assets/app-logo.png
-      project-file-path: Woohoo.Discue.Avalonia/Woohoo.Discue.Avalonia.csproj
+      project-file-path: Woohoo.Discue.Avalonia.Desktop/Woohoo.Discue.Avalonia.Desktop.csproj
       app-short-name: Discue
       app-display-name: 'Discue'
-      app-executable-name: Woohoo.Discue.Avalonia
+      app-executable-name: Woohoo.Discue.Avalonia.Desktop
       bundle-identifier: com.huguesvalois.discue
     secrets: inherit
 
@@ -28,8 +28,8 @@ jobs:
     uses: ./.github/workflows/generic-build-windows.yml
     with:
       tag-name: ${{ github.ref_name }}
-      project-file-path: Woohoo.Discue.Avalonia/Woohoo.Discue.Avalonia.csproj
-      app-executable-name: Woohoo.Discue.Avalonia
+      project-file-path: Woohoo.Discue.Avalonia.Desktop/Woohoo.Discue.Avalonia.Desktop.csproj
+      app-executable-name: Woohoo.Discue.Avalonia.Desktop
     secrets: inherit
 
   build-windows-cli:
@@ -52,8 +52,8 @@ jobs:
     uses: ./.github/workflows/generic-build-linux.yml
     with:
       tag-name: ${{ github.ref_name }}
-      project-file-path: Woohoo.Discue.Avalonia/Woohoo.Discue.Avalonia.csproj
-      app-executable-name: Woohoo.Discue.Avalonia
+      project-file-path: Woohoo.Discue.Avalonia.Desktop/Woohoo.Discue.Avalonia.Desktop.csproj
+      app-executable-name: Woohoo.Discue.Avalonia.Desktop
     secrets: inherit
 
   build-linux-cli:
