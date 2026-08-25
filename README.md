@@ -1,6 +1,6 @@
 # Discue - Audio Player for Windows, Linux and MacOS
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/huguesv/AudioPlayer/build-and-test.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/huguesv/Discue/build-and-test.yml)
 
 Discue is for playing audio tracks from CDs dumped to raw bin/cue or chd files.
 
@@ -46,25 +46,32 @@ Using a local LRCLIB sqlite3 database is also supported.
 
 For more screenshots, see the [SCREENSHOTS.md](SCREENSHOTS.md) file.
 
-## Compatibility
-
-The application has been tested on the following operating systems, but may
-work on earlier versions.
-
-- Windows 11 24H2 (x64, ARM64)
-- MacOS 15.3 (Apple Silicon)
-- Ubuntu 24.10 (x64, ARM64)
-
-The Linux version is currently not as polished as the Windows and MacOS versions.
-
 ## Releases
 
-Download the [latest release here](https://github.com/huguesv/AudioPlayer/releases/latest).
+Download the [latest release here](https://github.com/huguesv/Discue/releases/latest).
 
-Binaries are not available for MacOS yet. You'll need to [build it from sources](#building).
+The desktop player (Woohoo.Discue.Avalonia.Desktop) is available for Windows 11,
+Linux and MacOS.
+
+The terminal UI player (Woohoo.Discue.Consolonia) is available for Windows 11
+and Linux. It may not work on all Linux distributions, depending on the
+available version of ncurses.
+
+The console player (Woohoo.Discue.Cli) is available for Windows 11 and Linux.
 
 Windows may prevent you from launching the application, since it is not signed.
-You can still run it by clicking on "More info" and then "Run anyway".
+- You can still run it by clicking on "More info" and then "Run anyway".
+
+MacOS may prevent you from launching the application, since it is not signed.
+- If installing with the package installer, then open **System Settings**,
+  **Privacy & Security**, then scroll down to find **Discue** and
+  select **Open Anyway**.
+- If installing by opening the disc image and drag & dropping into the
+  **Applications** folder, then run the following commands from a **Terminal**.
+  ```
+  cd /Applications
+  xattr -d com.apple.quarantine Discue.app
+  ```
 
 ## Lyrics Configuration
 
@@ -173,7 +180,7 @@ dotnet build
 
 To run the desktop player, use the following command from the `\src` folder:
 ```
-dotnet run --project Woohoo.Discue.Avalonia
+dotnet run --project Woohoo.Discue.Avalonia.Desktop
 ```
 
 To run the terminal UI player, use the following command from the `\src` folder:
