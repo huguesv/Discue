@@ -7,9 +7,6 @@ using global::Android.App;
 using global::Android.Runtime;
 using global::Avalonia;
 using global::Avalonia.Android;
-using Microsoft.Extensions.DependencyInjection;
-using Woohoo.Discue.Avalonia.Android.Services;
-using Woohoo.Discue.Avalonia.Services;
 
 [Application]
 public class Application : AvaloniaAndroidApplication<App>
@@ -19,7 +16,7 @@ public class Application : AvaloniaAndroidApplication<App>
     {
         App.RegisterPlatformServices = services =>
         {
-            services.AddSingleton<IPlatformStorageService, AndroidPlatformStorageService>();
+            // TODO: Add any android specific services here
         };
     }
 

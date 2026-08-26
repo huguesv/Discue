@@ -4,7 +4,6 @@
 namespace Woohoo.Discue.Consolonia;
 
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
@@ -103,16 +102,6 @@ public partial class App : Application
     }
 
     public IHost Host { get; }
-
-    public static TopLevel? GetTopLevel(Application app)
-    {
-        if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
-        {
-            return desktopLifetime.MainWindow;
-        }
-
-        return null;
-    }
 
     public override void Initialize()
     {
