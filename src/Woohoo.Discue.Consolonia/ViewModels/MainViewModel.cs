@@ -3,6 +3,8 @@
 
 namespace Woohoo.Discue.Consolonia.ViewModels;
 
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -116,10 +118,10 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    public async Task BrowseAsync(CancellationToken cancellationToken)
+    public async Task BrowseAsync(IStorageProvider storageProvider, CancellationToken cancellationToken)
     {
         var filePaths = await this.filePickerService.GetFilePathsAsync(
+            storageProvider,
             this.lastBrowseFolder,
             "Open Disc Image",
             allowMultiple: false,

@@ -86,7 +86,6 @@ public partial class App : Application
                     return new MruService() { MruFilePath = mruFilePath };
                 });
                 services.AddSingleton<IVisualizationProviderService, VisualizationProviderService>();
-                services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
 
                 if (OperatingSystem.IsWindowsVersionAtLeast(5, 1, 2600))
                 {
@@ -110,26 +109,15 @@ public partial class App : Application
                 services.AddSingleton<PlaybackViewModel>();
                 services.AddSingleton<PlaylistViewModel>();
                 services.AddSingleton<SettingsViewModel>();
+
+                RegisterPlatformServices?.Invoke(services);
             })
             .Build();
     }
 
+    public static Action<IServiceCollection>? RegisterPlatformServices { get; set; }
+
     public IHost Host { get; }
-
-    public static TopLevel? GetTopLevel(Application app)
-    {
-        if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            return TopLevel.GetTopLevel(desktop.MainWindow);
-        }
-
-        if (app.ApplicationLifetime is ISingleViewApplicationLifetime viewApp)
-        {
-            return TopLevel.GetTopLevel(viewApp.MainView);
-        }
-
-        return null;
-    }
 
     public override void Initialize()
     {
@@ -145,6 +133,20 @@ public partial class App : Application
             desktopLifetime.MainWindow = new MainWindow
             {
                 DataContext = vm,
+            };
+        }
+        else if (this.ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
+        {
+            singleViewFactoryApplicationLifetime.MainViewFactory = () => new PageNavigationHost()
+            {
+                Page = new MobileView { DataContext = vm },
+            };
+        }
+        else if (this.ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        {
+            singleViewPlatform.MainView = new PageNavigationHost()
+            {
+                Page = new MobileView { DataContext = vm },
             };
         }
 

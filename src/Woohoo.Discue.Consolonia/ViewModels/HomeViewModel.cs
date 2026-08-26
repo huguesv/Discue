@@ -53,6 +53,12 @@ public sealed partial class HomeViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(RemoveSelectedFromRecentCommand))]
     public partial HomeRecentDiscViewModel? SelectedRecentDisc { get; set; } = null;
 
+    [RelayCommand]
+    public async Task BrowseAsync(CancellationToken cancellationToken)
+    {
+        WeakReferenceMessenger.Default.Send(new BrowseAlbumMessage());
+    }
+
     public void LoadAlbum(string albumFilePath)
     {
         WeakReferenceMessenger.Default.Send(new LoadAlbumMessage { AlbumFilePath = albumFilePath });

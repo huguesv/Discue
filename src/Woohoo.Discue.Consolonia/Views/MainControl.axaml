@@ -28,7 +28,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File" IsTabStop="False">
                 <MenuItem
-                    Command="{Binding Path=BrowseCommand, Mode=OneWay}"
+                    Command="{Binding Path=Home.BrowseCommand, Mode=OneWay}"
                     Header="_Open..."
                     HotKey="{OnPlatform Ctrl+O,
                                         macOS=⌘+O}"
@@ -363,7 +363,7 @@
                         <Button
                             Margin="0,0,0,1"
                             HorizontalAlignment="Left"
-                            Command="{Binding BrowseCommand, Mode=OneWay}"
+                            Command="{Binding Home.BrowseCommand, Mode=OneWay}"
                             Content="Open" />
                     </StackPanel>
                 </StackPanel>

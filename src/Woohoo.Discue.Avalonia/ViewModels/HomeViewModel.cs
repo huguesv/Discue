@@ -4,6 +4,7 @@
 namespace Woohoo.Discue.Avalonia.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using Woohoo.Audio.Services;
@@ -47,6 +48,12 @@ public sealed partial class HomeViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool HasRecentDiscs { get; set; }
+
+    [RelayCommand]
+    public async Task BrowseAsync(CancellationToken cancellationToken)
+    {
+        WeakReferenceMessenger.Default.Send(new BrowseAlbumMessage());
+    }
 
     public void LoadAlbum(string albumFilePath)
     {

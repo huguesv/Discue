@@ -7,5 +7,5 @@ using global::Avalonia.Platform.Storage;
 
 public interface IFilePickerService
 {
-    Task<string[]> GetFilePathsAsync(string startFolderPath, string title, bool allowMultiple, IReadOnlyList<FilePickerFileType> filters);
+    Task<string[]> GetFilePathsAsync(IStorageProvider storageProvider, string startFolderPath, string title, bool allowMultiple, IReadOnlyList<FilePickerFileType> filters);
 }

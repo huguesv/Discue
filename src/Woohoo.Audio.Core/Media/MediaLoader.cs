@@ -12,9 +12,9 @@ using Woohoo.Audio.Core.Internal.CueToolsDatabase;
 using Woohoo.Audio.Core.Internal.IO;
 using Woohoo.IO.Compression.Chd;
 
-public static class MediaLoader
+public class MediaLoader : IMediaLoader
 {
-    public static async Task<IAlbumMedia> LoadFromAsync(string filePath, CancellationToken cancellationToken)
+    public async Task<IAlbumMedia> LoadFromAsync(string filePath, CancellationToken cancellationToken)
     {
         if (!File.Exists(filePath))
         {
@@ -74,7 +74,6 @@ public static class MediaLoader
 
         var cueSheetName = Path.GetFileNameWithoutExtension(cueFile);
         var cueSheetFileName = cueFile;
-        var cueSheetContainerPath = folder.ContainerPath;
 
         var cueData = folder.ReadFileText(cueSheetFileName);
 

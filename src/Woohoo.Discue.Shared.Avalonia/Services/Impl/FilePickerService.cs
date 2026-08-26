@@ -7,43 +7,37 @@ using global::Avalonia.Platform.Storage;
 
 public sealed class FilePickerService : IFilePickerService
 {
-    private readonly ITopLevelProvider topLevelProvider;
-
-    public FilePickerService(ITopLevelProvider topLevelProvider)
+    public async Task<string[]> GetFilePathsAsync(IStorageProvider storageProvider, string startFolderPath, string title, bool allowMultiple, IReadOnlyList<FilePickerFileType> filters)
     {
-        ArgumentNullException.ThrowIfNull(topLevelProvider);
-
-        this.topLevelProvider = topLevelProvider;
-    }
-
-    public async Task<string[]> GetFilePathsAsync(string startFolderPath, string title, bool allowMultiple, IReadOnlyList<FilePickerFileType> filters)
-    {
-        var window = this.topLevelProvider.GetTopLevel() ?? throw new InvalidOperationException();
-        if (window.StorageProvider.CanOpen == true)
+        if (storageProvider.CanOpen == true)
         {
-            IStorageFolder? startLocation = await window.StorageProvider.TryGetFolderFromPathAsync(startFolderPath);
-
             var options = new FilePickerOpenOptions
             {
                 Title = title,
                 AllowMultiple = allowMultiple,
-                SuggestedStartLocation = startLocation,
                 FileTypeFilter = filters,
             };
 
-            var files = await window.StorageProvider.OpenFilePickerAsync(options);
-
-            var filePaths = new List<string>();
-            foreach (var file in files)
+            try
             {
-                string? path = file.TryGetLocalPath();
-                if (!string.IsNullOrEmpty(path))
-                {
-                    filePaths.Add(path);
-                }
-            }
+                var files = await storageProvider.OpenFilePickerAsync(options);
 
-            return [.. filePaths];
+                var filePaths = new List<string>();
+                foreach (var file in files)
+                {
+                    string? path = file.TryGetLocalPath();
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        filePaths.Add(path);
+                    }
+                }
+
+                return [.. filePaths];
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         return [];

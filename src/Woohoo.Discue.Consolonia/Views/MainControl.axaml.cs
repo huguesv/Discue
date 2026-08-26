@@ -27,6 +27,11 @@ public partial class MainControl : UserControl
         {
             this.ShowError(m);
         });
+
+        WeakReferenceMessenger.Default.Register<BrowseAlbumMessage>(this, (r, m) =>
+        {
+            _ = this.BrowseAsync(CancellationToken.None);
+        });
     }
 
     private void OnExit(object sender, RoutedEventArgs e)
@@ -103,5 +108,13 @@ public partial class MainControl : UserControl
         };
 
         mb.ShowDialog();
+    }
+
+    private async Task BrowseAsync(CancellationToken cancellationToken)
+    {
+        var mainViewModel = this.DataContext as MainViewModel ?? throw new NotSupportedException();
+        var topLevel = TopLevel.GetTopLevel(this) ?? throw new NotSupportedException();
+
+        await mainViewModel.BrowseAsync(topLevel.StorageProvider, cancellationToken);
     }
 }

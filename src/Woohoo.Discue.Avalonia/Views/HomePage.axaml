@@ -32,7 +32,7 @@
                 <Button
                     Margin="10"
                     HorizontalAlignment="Left"
-                    Command="{Binding BrowseCommand, Mode=OneWay}">
+                    Command="{Binding Home.BrowseCommand, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal">
                         <ic:SymbolIcon FontSize="16" Symbol="FolderOpen" />
                         <TextBlock Margin="5,0,0,0" Text="Open file" />
@@ -115,7 +115,7 @@
                 Grid.Row="2"
                 Margin="0,10"
                 HorizontalAlignment="Right"
-                Command="{Binding BrowseCommand, Mode=OneWay}">
+                Command="{Binding Home.BrowseCommand, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal">
                     <ic:SymbolIcon FontSize="16" Symbol="FolderOpen" />
                     <TextBlock Margin="5,0,0,0" Text="Open file" />

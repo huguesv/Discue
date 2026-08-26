@@ -104,7 +104,7 @@
         <NativeMenu>
             <NativeMenuItem Header="File">
                 <NativeMenu>
-                    <NativeMenuItem Command="{Binding BrowseCommand, Mode=OneWay}" Header="Open..." />
+                    <NativeMenuItem Command="{Binding Home.BrowseCommand, Mode=OneWay}" Header="Open..." />
                     <NativeMenuItemSeparator />
                 </NativeMenu>
             </NativeMenuItem>

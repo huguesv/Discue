@@ -144,7 +144,7 @@ public sealed class MediaPlayerService : IMediaPlayerService
 
         await this.player.ClearAsync(cancellationToken);
 
-        var media = await MediaLoader.LoadFromAsync(albumFilePath, cancellationToken);
+        var media = await new MediaLoader().LoadFromAsync(albumFilePath, cancellationToken);
 
         this.discMetadataCache.Clear();
         this.trackMetadataCache.Clear();

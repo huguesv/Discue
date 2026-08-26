@@ -3,10 +3,12 @@
 
 namespace Woohoo.Discue.Avalonia.Views;
 
+using CommunityToolkit.Mvvm.Messaging;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Interactivity;
 using global::Avalonia.Platform.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Woohoo.Discue.Avalonia.Helpers;
 using Woohoo.Discue.Avalonia.ViewModels;
 
@@ -34,6 +36,11 @@ public partial class MainWindow : Window
         WindowStateHelper.TrackWindow(
             this,
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Woohoo.Discue.Avalonia", "WindowSettings.json"));
+
+        WeakReferenceMessenger.Default.Register<BrowseAlbumMessage>(this, (r, m) =>
+        {
+            _ = this.BrowseAsync(CancellationToken.None);
+        });
     }
 
     public void OnDrop(object? sender, DragEventArgs e)
@@ -268,5 +275,13 @@ public partial class MainWindow : Window
         }
 
         this.isNavigatingProgrammatically = false;
+    }
+
+    private async Task BrowseAsync(CancellationToken cancellationToken)
+    {
+        var mainViewModel = this.DataContext as MainViewModel ?? throw new NotSupportedException();
+        var topLevel = TopLevel.GetTopLevel(this) ?? throw new NotSupportedException();
+
+        await mainViewModel.BrowseAsync(topLevel.StorageProvider, cancellationToken);
     }
 }

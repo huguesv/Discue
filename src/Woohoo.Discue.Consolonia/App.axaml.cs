@@ -83,7 +83,6 @@ public partial class App : Application
                     return new MruService() { MruFilePath = mruFilePath };
                 });
                 services.AddSingleton<IVisualizationProviderService, VisualizationProviderService>();
-                services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
 
                 services.AddSingleton<IThemeService, ThemeService>();
 
@@ -98,7 +97,6 @@ public partial class App : Application
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<VisualizationViewModel>();
 
-                services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
                 services.AddSingleton<IFilePickerService, FilePickerService>();
             })
             .Build();

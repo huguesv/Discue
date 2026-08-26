@@ -17,7 +17,7 @@
     </Window.Styles>
 
     <Window.KeyBindings>
-        <KeyBinding Command="{Binding BrowseCommand}" Gesture="{OnPlatform Ctrl+O, macOS=⌘+O}" />
+        <KeyBinding Command="{Binding Home.BrowseCommand}" Gesture="{OnPlatform Ctrl+O, macOS=⌘+O}" />
     </Window.KeyBindings>
 
     <local:MainControl />

@@ -6,6 +6,7 @@ namespace Woohoo.Discue.Avalonia.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using global::Avalonia.Platform.Storage;
 using Microsoft.Extensions.Logging;
 using Woohoo.Audio.Core.Media;
 using Woohoo.Audio.Services;
@@ -84,6 +85,32 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     public partial ViewType View { get; set; }
 
+    public async Task BrowseAsync(IStorageProvider storageProvider, CancellationToken cancellationToken)
+    {
+        _ = this.dispatcherQueue.TryEnqueue(async () =>
+        {
+            var filePaths = await this.filePickerService.GetFilePathsAsync(
+                storageProvider,
+                this.lastBrowseFolder,
+                Localized.BrowseDialogTitle,
+                allowMultiple: false,
+                [
+                    new("Disc Image Files") { Patterns = ["*.cue", "*.zip", "*.chd"] },
+                new("All Files") { Patterns = ["*.*"] },
+                ]);
+
+            if (filePaths.Length > 0)
+            {
+                var filePath = filePaths[0];
+
+                this.lastBrowseFolder = Path.GetDirectoryName(filePath) ?? string.Empty;
+                this.localSettingsService.SaveSetting(KnownSettingKeys.LastBrowseFolder, this.lastBrowseFolder);
+
+                await this.OpenFileAsync(filePath, cancellationToken);
+            }
+        });
+    }
+
     public async Task OpenFileAsync(string filePath, CancellationToken cancellationToken)
     {
         try
@@ -98,29 +125,6 @@ public partial class MainViewModel : ObservableObject
         catch (FileNotFoundException ex)
         {
             WeakReferenceMessenger.Default.Send(new MediaErrorMessage { Text = ex.Message });
-        }
-    }
-
-    [RelayCommand]
-    public async Task BrowseAsync(CancellationToken cancellationToken)
-    {
-        var filePaths = await this.filePickerService.GetFilePathsAsync(
-            this.lastBrowseFolder,
-            Localized.BrowseDialogTitle,
-            allowMultiple: false,
-            [
-                new("Disc Image Files") { Patterns = ["*.cue", "*.zip", "*.chd"] },
-                new("All Files") { Patterns = ["*.*"] },
-            ]);
-
-        if (filePaths.Length > 0)
-        {
-            var filePath = filePaths[0];
-
-            this.lastBrowseFolder = Path.GetDirectoryName(filePath) ?? string.Empty;
-            this.localSettingsService.SaveSetting(KnownSettingKeys.LastBrowseFolder, this.lastBrowseFolder);
-
-            await this.OpenFileAsync(filePath, cancellationToken);
         }
     }
 
