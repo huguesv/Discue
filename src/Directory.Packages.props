@@ -19,9 +19,9 @@
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.251219" />
     <PackageVersion Include="CommunityToolkit.WinUI.Converters" Version="8.2.251219" />
-    <PackageVersion Include="Consolonia" Version="12.0.3.12" />
-    <PackageVersion Include="Consolonia.Fonts" Version="12.0.3.12" />
-    <PackageVersion Include="Consolonia.ManagedWindows" Version="12.0.3.12" />
+    <PackageVersion Include="Consolonia" Version="12.0.3.13" />
+    <PackageVersion Include="Consolonia.Fonts" Version="12.0.3.13" />
+    <PackageVersion Include="Consolonia.ManagedWindows" Version="12.0.3.13" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="coverlet.MTP" Version="10.0.1" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
