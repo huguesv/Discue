@@ -103,7 +103,7 @@ public sealed partial class HomeViewModel : ObservableObject
         {
             var itemViewModel = new HomeRecentDiscViewModel(this.mruService, this.logger)
             {
-                AlbumFilePath = item.FilePath,
+                AlbumFilePath = item.Moniker,
                 FullAlbumTitle = item.FullAlbumTitle,
             };
 

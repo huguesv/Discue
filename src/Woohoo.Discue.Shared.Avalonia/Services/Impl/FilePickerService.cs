@@ -42,4 +42,29 @@ public sealed class FilePickerService : IFilePickerService
 
         return [];
     }
+
+    public async Task<IStorageFile[]> GetFilesAsync(IStorageProvider storageProvider, string startFolderPath, string title, bool allowMultiple, IReadOnlyList<FilePickerFileType> filters)
+    {
+        if (storageProvider.CanOpen == true)
+        {
+            var options = new FilePickerOpenOptions
+            {
+                Title = title,
+                AllowMultiple = allowMultiple,
+                FileTypeFilter = filters,
+            };
+
+            try
+            {
+                var files = await storageProvider.OpenFilePickerAsync(options);
+                return [.. files];
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
+
+        return [];
+    }
 }

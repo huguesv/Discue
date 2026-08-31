@@ -14,4 +14,9 @@ internal class NullFilePickerService : IFilePickerService
     {
         return Task.FromResult(Array.Empty<string>());
     }
+
+    public Task<IStorageFile[]> GetFilesAsync(IStorageProvider storageProvider, string startFolderPath, string title, bool allowMultiple, IReadOnlyList<FilePickerFileType> filters)
+    {
+        return Task.FromResult(Array.Empty<IStorageFile>());
+    }
 }

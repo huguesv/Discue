@@ -9,5 +9,5 @@ public sealed record class AudioPlayerDisc
 
     public required string CTDBToc { get; init; }
 
-    public string FilePath { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
 }

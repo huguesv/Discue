@@ -305,9 +305,9 @@ internal class ConsolePlayer
         {
             sb.Append(discMetadata?.AlbumTitle);
         }
-        else if (!string.IsNullOrEmpty(disc?.FilePath))
+        else if (!string.IsNullOrEmpty(disc?.Name))
         {
-            sb.Append(Path.GetFileNameWithoutExtension(disc?.FilePath));
+            sb.Append(disc.Name);
         }
 
         this.PrintAlbumTitle(sb.ToString());

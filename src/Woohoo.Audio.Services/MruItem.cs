@@ -5,4 +5,4 @@ namespace Woohoo.Audio.Services;
 
 using System;
 
-public record class MruItem(string FilePath, string FullAlbumTitle, string AlbumArtUrl, DateTime LastUpdated);
+public record class MruItem(string Moniker, string FullAlbumTitle, string AlbumArtUrl, DateTime LastUpdated);

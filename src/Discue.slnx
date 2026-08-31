@@ -16,6 +16,7 @@
   <Project Path="Woohoo.Audio.LrcDatabase.Sqlite/Woohoo.Audio.LrcDatabase.Sqlite.csproj" Id="01c7d38f-a601-480c-82ba-9e7a10b48510" />
   <Project Path="Woohoo.Audio.LrcDatabase.Web.UnitTest/Woohoo.Audio.LrcDatabase.Web.UnitTest.csproj" Id="be72be75-422d-4c8e-a017-731acb61346f" />
   <Project Path="Woohoo.Audio.LrcDatabase.Web/Woohoo.Audio.LrcDatabase.Web.csproj" Id="d1abb3b4-22a6-435f-9542-a7848873f3af" />
+  <Project Path="Woohoo.Audio.Playback.Android/Woohoo.Audio.Playback.Android.csproj" />
   <Project Path="Woohoo.Audio.Playback.Sdl3/Woohoo.Audio.Playback.Sdl3.csproj" />
   <Project Path="Woohoo.Audio.Playback.Windows/Woohoo.Audio.Playback.Windows.csproj" Id="796351ab-4984-43f9-8190-a85d302e22bc" />
   <Project Path="Woohoo.Audio.Services.Impl/Woohoo.Audio.Services.Impl.csproj" Id="bcd8d76e-c4d0-42ea-b4f3-077110e10dce" />
@@ -24,6 +25,7 @@
   <Project Path="Woohoo.Codecs/Woohoo.Codecs.csproj" />
   <Project Path="Woohoo.ConsoloniaControls.Gallery/Woohoo.ConsoloniaControls.Gallery.csproj" />
   <Project Path="Woohoo.ConsoloniaControls/Woohoo.ConsoloniaControls.csproj" />
+  <Project Path="Woohoo.Discue.Avalonia.Android/Woohoo.Discue.Avalonia.Android.csproj" />
   <Project Path="Woohoo.Discue.Avalonia.Desktop/Woohoo.Discue.Avalonia.Desktop.csproj" />
   <Project Path="Woohoo.Discue.Avalonia/Woohoo.Discue.Avalonia.csproj" />
   <Project Path="Woohoo.Discue.Cli/Woohoo.Discue.Cli.csproj" />

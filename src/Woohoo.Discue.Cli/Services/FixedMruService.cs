@@ -25,7 +25,7 @@ internal sealed class FixedMruService : IMruService
     {
     }
 
-    public MruItem? FindItem(string filePath)
+    public MruItem? FindItem(string itemMoniker)
     {
         return null;
     }
@@ -35,7 +35,7 @@ internal sealed class FixedMruService : IMruService
         return [];
     }
 
-    public void RemoveItem(string filePath)
+    public void RemoveItem(string itemMoniker)
     {
     }
 }

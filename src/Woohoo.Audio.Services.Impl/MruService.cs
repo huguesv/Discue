@@ -48,9 +48,9 @@ public sealed class MruService : IMruService
         this.ItemsChanged?.Invoke(this, new EventArgs());
     }
 
-    public void RemoveItem(string filePath)
+    public void RemoveItem(string itemMoniker)
     {
-        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(itemMoniker);
 
         this.EnsureInitialized();
 
@@ -58,7 +58,7 @@ public sealed class MruService : IMruService
 
         lock (this.dataLock)
         {
-            var item = this.items.Find(i => i.FilePath == filePath);
+            var item = this.items.Find(i => i.Moniker == itemMoniker);
             if (item is not null)
             {
                 removed = this.items.Remove(item);
@@ -93,7 +93,7 @@ public sealed class MruService : IMruService
 
         lock (this.dataLock)
         {
-            int index = this.items.FindIndex(i => i.FilePath == item.FilePath);
+            int index = this.items.FindIndex(i => i.Moniker == item.Moniker);
             if (index >= 0)
             {
                 this.items[index] = item;
@@ -108,15 +108,15 @@ public sealed class MruService : IMruService
         this.ItemsChanged?.Invoke(this, new EventArgs());
     }
 
-    public MruItem? FindItem(string filePath)
+    public MruItem? FindItem(string itemMoniker)
     {
-        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(itemMoniker);
 
         this.EnsureInitialized();
 
         lock (this.dataLock)
         {
-            return this.items.Find(i => i.FilePath == filePath);
+            return this.items.Find(i => i.Moniker == itemMoniker);
         }
     }
 

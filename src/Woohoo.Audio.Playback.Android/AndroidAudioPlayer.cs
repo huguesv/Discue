@@ -1,18 +1,19 @@
 ﻿// Copyright (c) Hugues Valois. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
-namespace Woohoo.Audio.Playback.Sdl3;
+namespace Woohoo.Audio.Playback.Android;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using global::Android.Media;
 using Woohoo.Audio.Core;
 using Woohoo.Audio.Core.Media;
 using Woohoo.Audio.Core.Playback;
-using Woohoo.Sdl3;
 
-public sealed class Sdl3AudioPlayer : IAudioPlayer
+[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "TODO")]
+public sealed class AndroidAudioPlayer : IAudioPlayer
 {
     public const int Channels = 2;
     public const int Frequency = 44100;
@@ -21,33 +22,31 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
     private readonly List<AudioPlayerTrack> playlistTracks;
     private readonly List<AudioPlayerDisc> discs;
     private readonly Dictionary<Guid, IAlbumTrack> guidToAlbumTrackMap = [];
-    private readonly Sdl3AudioPlayerVisualizationData visualization;
+    private readonly AndroidAudioPlayerVisualizationData visualization;
     private readonly Lock dataLock;
 
-    private readonly Lock bufferLock = new();
-    private readonly byte[] buffer;
+    private readonly Lock streamLock = new();
 
     private int activeTrackIndex;
 
-    private SdlAudioStream? audioDeviceStream;
+    private AudioTrack? audioTrack;
 
     private bool initialized;
-    private Stream? fileStream;
+    private System.IO.Stream? fileStream;
     private byte[] fileData = [];
     private int fileDataIndex;
     private int fileDataLength;
-    private int pendingVolume;
 
-    public Sdl3AudioPlayer()
+    private CancellationTokenSource? playbackTaskCancellationTokenSource;
+    private Task? playbackTask;
+
+    public AndroidAudioPlayer()
     {
         this.playlistTracks = [];
         this.discs = [];
-        this.visualization = new Sdl3AudioPlayerVisualizationData();
+        this.visualization = new AndroidAudioPlayerVisualizationData();
         this.dataLock = new Lock();
         this.activeTrackIndex = -1;
-
-        this.buffer = new byte[4096];
-        this.pendingVolume = 100;
     }
 
     public event EventHandler<EventArgs>? ActiveTrackChanged;
@@ -56,7 +55,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
 
     public event EventHandler<EventArgs>? PlaybackStateChanged;
 
-    public string AudioEngineDisplayName => "SDL3";
+    public string AudioEngineDisplayName => "Android";
 
     public ImmutableArray<AudioPlayerTrack> Tracks
     {
@@ -95,35 +94,12 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
 
     public bool IsPlaying { get; private set; }
 
-    public bool CanAdjustVolume => true;
+    public bool CanAdjustVolume => false;
 
     public int Volume
     {
-        get
-        {
-            if (this.initialized)
-            {
-                this.VerifyDeviceNotNull();
-                return Math.Max(0, Math.Min(100, (int)((this.audioDeviceStream?.Gain ?? 1) * 100)));
-            }
-            else
-            {
-                return this.pendingVolume;
-            }
-        }
-
-        set
-        {
-            if (this.initialized)
-            {
-                this.VerifyDeviceNotNull();
-                this.audioDeviceStream.Gain = value / 100.0f;
-            }
-            else
-            {
-                this.pendingVolume = value;
-            }
-        }
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
     }
 
     public IAudioPlayerVisualization Visualization => this.visualization;
@@ -135,11 +111,42 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
             return;
         }
 
-        SdlAudio.Initialize();
+        int minBufferSize = AudioTrack.GetMinBufferSize(Frequency, ChannelOut.Stereo, Encoding.Pcm16bit);
 
-        this.audioDeviceStream = SdlAudio.DefaultDevices.Playback.OpenStream(SdlAudioFormat.SDL_AUDIO_S16LE, Channels, Frequency, this.AudioRequested);
+        var attributes = new AudioAttributes.Builder()
+            .SetUsage(AudioUsageKind.Media)!
+            .SetContentType(AudioContentType.Music)!
+            .Build();
+        if (attributes is null)
+        {
+            throw new InvalidOperationException("Could not initialize android audio.");
+        }
+
+        var format = new AudioFormat.Builder()!
+            .SetSampleRate(Frequency)!
+            .SetEncoding(Encoding.Pcm16bit)!
+            .SetChannelMask(ChannelOut.Stereo)!
+            .Build();
+        if (format is null)
+        {
+            throw new InvalidOperationException("Could not initialize android audio.");
+        }
+
+        this.audioTrack = new AudioTrack.Builder()!
+            .SetAudioAttributes(attributes)!
+            .SetAudioFormat(format)!
+            .SetBufferSizeInBytes(minBufferSize * 2)
+            .SetTransferMode(AudioTrackMode.Stream)!
+            .Build();
+        if (this.audioTrack is null)
+        {
+            throw new InvalidOperationException("Could not initialize android audio.");
+        }
+
         this.initialized = true;
-        this.Volume = this.pendingVolume;
+
+        this.playbackTaskCancellationTokenSource = new CancellationTokenSource();
+        this.playbackTask = Task.Run(() => this.StreamAudioLoop(minBufferSize, this.playbackTaskCancellationTokenSource.Token), this.playbackTaskCancellationTokenSource.Token);
     }
 
     public AudioPlayerDisc? FindDisc(Guid id)
@@ -177,10 +184,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
         return Task.CompletedTask;
     }
 
-    public Task LoadAsync(
-        AudioPlayerDisc disc,
-        ImmutableArray<(AudioPlayerTrack PlayerTrack, AudioPlayerTrackMetadata TrackMetadata, IAlbumTrack AlbumTrack)> tracks,
-        CancellationToken cancellationToken)
+    public Task LoadAsync(AudioPlayerDisc disc, ImmutableArray<(AudioPlayerTrack PlayerTrack, AudioPlayerTrackMetadata TrackMetadata, IAlbumTrack AlbumTrack)> tracks, CancellationToken cancellationToken)
     {
         lock (this.dataLock)
         {
@@ -246,7 +250,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
     {
         this.VerifyDeviceNotNull();
 
-        lock (this.bufferLock)
+        lock (this.streamLock)
         {
             int offset = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
             this.fileDataIndex = AdjustDataIndex(Math.Max(0, this.fileDataIndex - offset));
@@ -258,7 +262,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
     {
         this.VerifyDeviceNotNull();
 
-        lock (this.bufferLock)
+        lock (this.streamLock)
         {
             int offset = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
             this.fileDataIndex = AdjustDataIndex(Math.Min(this.fileDataLength, this.fileDataIndex + offset));
@@ -270,7 +274,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
     {
         this.VerifyDeviceNotNull();
 
-        lock (this.bufferLock)
+        lock (this.streamLock)
         {
             int offset = (int)(span.TotalSeconds * Frequency * Channels * FormatSizeInBytes);
             this.fileDataIndex = AdjustDataIndex(offset);
@@ -283,23 +287,18 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
         return Task.CompletedTask;
     }
 
-    public Task UpdateTrackMetadataAsync(
-        Guid trackId,
-        AudioPlayerTrackMetadata trackMetadata,
-        Uri? originalAlbumArtUri,
-        Uri? localAlbumArtUri,
-        CancellationToken cancellationToken)
+    public Task UpdateTrackMetadataAsync(Guid trackId, AudioPlayerTrackMetadata trackMetadata, Uri? originalAlbumArtUri, Uri? localAlbumArtUri, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
     public void Shutdown()
     {
-        lock (this.bufferLock)
+        lock (this.streamLock)
         {
-            this.audioDeviceStream?.Pause();
-            this.audioDeviceStream?.Dispose();
-            this.audioDeviceStream = null;
+            this.audioTrack?.Pause();
+            this.audioTrack?.Dispose();
+            this.audioTrack = null;
         }
 
         this.IsPlaying = false;
@@ -347,7 +346,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
         }
     }
 
-    private void Play(Stream fileStream, int length)
+    private void Play(System.IO.Stream fileStream, int length)
     {
         this.IsPlaying = false;
 
@@ -365,7 +364,7 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
     {
         this.VerifyDeviceNotNull();
 
-        this.audioDeviceStream.Pause();
+        this.audioTrack.Pause();
 
         this.IsPlaying = false;
         this.PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
@@ -375,22 +374,69 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
     {
         this.VerifyDeviceNotNull();
 
-        this.audioDeviceStream.Resume();
+        this.audioTrack.Play();
 
         this.IsPlaying = true;
         this.PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void AudioRequested(SdlAudioStream device, int additionalAmount, int totalAmount)
+    private void StreamAudioLoop(int bufferSize, CancellationToken token)
     {
-        lock (this.bufferLock)
+        byte[] buffer = new byte[bufferSize];
+
+        try
         {
-            if (this.audioDeviceStream is null)
+            while (!token.IsCancellationRequested)
             {
-                return;
+                // Fire callback to pull next slice of PCM data from consumer
+                int bytesProvided = this.AudioRequested(buffer, buffer.Length);
+
+                if (bytesProvided <= 0)
+                {
+                    // End of track
+                    Thread.Sleep(50);
+                    continue;
+                }
+
+                lock (this.streamLock)
+                {
+                    if (this.audioTrack == null || this.audioTrack.PlayState != PlayState.Playing)
+                    {
+                        break;
+                    }
+
+                    // WriteMode.Blocking pauses this background thread until
+                    // Android's internal buffer has space for the new data.
+                    this.audioTrack.Write(buffer, 0, bytesProvided, WriteMode.Blocking);
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Normal exit on cancellation
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Audio streaming error: {ex.Message}");
+        }
+        finally
+        {
+            lock (this.streamLock)
+            {
+            }
+        }
+    }
+
+    private int AudioRequested(byte[] buffer, int amount)
+    {
+        lock (this.streamLock)
+        {
+            if (this.audioTrack is null)
+            {
+                return 0;
             }
 
-            int total = Math.Min(additionalAmount, this.fileDataLength - this.fileDataIndex);
+            int total = Math.Min(amount, this.fileDataLength - this.fileDataIndex);
             total = (total / 2) * 2;
             if (total == 0)
             {
@@ -406,30 +452,31 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
                     this.Pause();
                 }
 
-                return;
+                return 0;
             }
 
             if (this.fileStream is not null)
             {
-                this.fileStream.ReadExactly(this.buffer, 0, total);
+                this.fileStream.ReadExactly(buffer, 0, total);
             }
             else
             {
-                Array.Copy(this.fileData, this.fileDataIndex, this.buffer, 0, total);
+                Array.Copy(this.fileData, this.fileDataIndex, buffer, 0, total);
             }
 
             this.fileDataIndex += total;
 
-            this.visualization.AnalyzeBuffer(this.buffer, total);
+            this.visualization.AnalyzeBuffer(buffer, total);
             this.PlaybackPositionChanged?.Invoke(this, EventArgs.Empty);
-            device.PutStreamData(this.buffer, total);
+
+            return total;
         }
     }
 
-    [MemberNotNull(nameof(audioDeviceStream))]
+    [MemberNotNull(nameof(audioTrack))]
     private void VerifyDeviceNotNull()
     {
-        if (this.audioDeviceStream is null)
+        if (this.audioTrack is null)
         {
             throw new InvalidOperationException("Stream device not set.");
         }

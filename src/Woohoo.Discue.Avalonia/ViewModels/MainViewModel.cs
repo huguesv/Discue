@@ -9,8 +9,10 @@ using CommunityToolkit.Mvvm.Messaging;
 using global::Avalonia.Platform.Storage;
 using Microsoft.Extensions.Logging;
 using Woohoo.Audio.Core.Media;
+using Woohoo.Audio.Core.Storage;
 using Woohoo.Audio.Services;
 using Woohoo.Discue.Avalonia.Services;
+using Woohoo.Discue.Shared.Avalonia.Helpers;
 using Woohoo.Discue.Shared.Avalonia.Services;
 
 public partial class MainViewModel : ObservableObject
@@ -89,24 +91,40 @@ public partial class MainViewModel : ObservableObject
     {
         _ = this.dispatcherQueue.TryEnqueue(async () =>
         {
-            var filePaths = await this.filePickerService.GetFilePathsAsync(
+            var files = await this.filePickerService.GetFilesAsync(
                 storageProvider,
                 this.lastBrowseFolder,
                 Localized.BrowseDialogTitle,
                 allowMultiple: false,
                 [
                     new("Disc Image Files") { Patterns = ["*.cue", "*.zip", "*.chd"] },
-                new("All Files") { Patterns = ["*.*"] },
+                    new("All Files") { Patterns = ["*.*"] },
                 ]);
 
-            if (filePaths.Length > 0)
+            if (files.Length > 0)
             {
-                var filePath = filePaths[0];
+                var file = files[0];
 
-                this.lastBrowseFolder = Path.GetDirectoryName(filePath) ?? string.Empty;
+                var localPath = file.TryGetLocalPath();
+                if (localPath is not null)
+                {
+                    this.lastBrowseFolder = Path.GetDirectoryName(localPath) ?? string.Empty;
+                }
+                else
+                {
+                    this.lastBrowseFolder = string.Empty;
+                }
+
                 this.localSettingsService.SaveSetting(KnownSettingKeys.LastBrowseFolder, this.lastBrowseFolder);
 
-                await this.OpenFileAsync(filePath, cancellationToken);
+                if (localPath is not null)
+                {
+                    await this.OpenFileAsync(localPath, cancellationToken);
+                }
+                else
+                {
+                    await this.OpenStorageAsync(new AvaloniaStorageFile(file), cancellationToken);
+                }
             }
         });
     }
@@ -115,7 +133,26 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            await Task.Run(async () => await this.mediaPlayerService.LoadFromFileAsync(filePath, cancellationToken));
+            await Task.Run(async () => await this.mediaPlayerService.LoadFromFileAsync(filePath, cancellationToken), cancellationToken);
+            this.View = ViewType.NowPlaying;
+        }
+        catch (MediaLoadException ex)
+        {
+            WeakReferenceMessenger.Default.Send(new MediaErrorMessage { Text = ex.Message });
+        }
+        catch (FileNotFoundException ex)
+        {
+            WeakReferenceMessenger.Default.Send(new MediaErrorMessage { Text = ex.Message });
+        }
+    }
+
+    public async Task OpenStorageAsync(IXPlatStorageFile storageFile, CancellationToken cancellationToken)
+    {
+        try
+        {
+            this.mediaPlayerService.InitializePlayer();
+
+            await Task.Run(async () => await this.mediaPlayerService.LoadFromStorageAsync(storageFile, cancellationToken), cancellationToken);
             this.View = ViewType.NowPlaying;
         }
         catch (MediaLoadException ex)

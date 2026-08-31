@@ -25,7 +25,7 @@ internal class NullMruService : IMruService
     {
     }
 
-    public MruItem? FindItem(string filePath)
+    public MruItem? FindItem(string itemMoniker)
     {
         return null;
     }
@@ -35,7 +35,7 @@ internal class NullMruService : IMruService
         return [];
     }
 
-    public void RemoveItem(string filePath)
+    public void RemoveItem(string itemMoniker)
     {
     }
 }

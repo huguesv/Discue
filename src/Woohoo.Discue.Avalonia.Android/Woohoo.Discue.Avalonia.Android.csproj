@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Woohoo.Audio.Playback.Android\Woohoo.Audio.Playback.Android.csproj" />
     <ProjectReference Include="..\Woohoo.Discue.Avalonia\Woohoo.Discue.Avalonia.csproj" />
   </ItemGroup>
 </Project>

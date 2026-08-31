@@ -16,6 +16,7 @@
   <Project Path="Woohoo.Audio.LrcDatabase.Sqlite/Woohoo.Audio.LrcDatabase.Sqlite.csproj" />
   <Project Path="Woohoo.Audio.LrcDatabase.Web.UnitTest/Woohoo.Audio.LrcDatabase.Web.UnitTest.csproj" Id="be72be75-422d-4c8e-a017-731acb61346f" />
   <Project Path="Woohoo.Audio.LrcDatabase.Web/Woohoo.Audio.LrcDatabase.Web.csproj" Id="d1abb3b4-22a6-435f-9542-a7848873f3af" />
+  <Project Path="Woohoo.Audio.Playback.Android/Woohoo.Audio.Playback.Android.csproj" Id="8d6582e4-48fe-44ef-9144-4b3cbb5c16b0" />
   <Project Path="Woohoo.Audio.Playback.Sdl3/Woohoo.Audio.Playback.Sdl3.csproj" />
   <Project Path="Woohoo.Audio.Services.Impl/Woohoo.Audio.Services.Impl.csproj" />
   <Project Path="Woohoo.Audio.Services/Woohoo.Audio.Services.csproj" />

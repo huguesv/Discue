@@ -12,6 +12,7 @@ using Woohoo.Audio.Core.Lyrics;
 using Woohoo.Audio.Core.Media;
 using Woohoo.Audio.Core.Metadata;
 using Woohoo.Audio.Core.Playback;
+using Woohoo.Audio.Core.Storage;
 
 public sealed class MediaPlayerService : IMediaPlayerService
 {
@@ -138,6 +139,11 @@ public sealed class MediaPlayerService : IMediaPlayerService
 
     public void Play(Guid trackId) => this.player.Play(trackId);
 
+    public void InitializePlayer()
+    {
+        this.player.Initialize();
+    }
+
     public async Task LoadFromFileAsync(string albumFilePath, CancellationToken cancellationToken)
     {
         this.DiscLoading?.Invoke(this, EventArgs.Empty);
@@ -146,46 +152,26 @@ public sealed class MediaPlayerService : IMediaPlayerService
 
         var media = await new MediaLoader().LoadFromAsync(albumFilePath, cancellationToken);
 
-        this.discMetadataCache.Clear();
-        this.trackMetadataCache.Clear();
-        this.lyricsCache.Clear();
+        var albumName = Path.GetFileNameWithoutExtension(albumFilePath);
+        string mruItemMoniker = albumFilePath;
 
-        var (disc, discMetadata, tracks) = Convert(media, albumFilePath);
-        foreach (var track in tracks)
-        {
-            this.trackMetadataCache.AddOrUpdate(track.PlayerTrack.Id, track.TrackMetadata, (id, existing) => track.TrackMetadata);
-        }
+        await this.PostLoadAsync(media, albumName, mruItemMoniker, cancellationToken);
+    }
 
-        this.discMetadataCache.AddOrUpdate(disc.Id, discMetadata, (id, existing) => discMetadata);
+    public async Task LoadFromStorageAsync(IXPlatStorageFile storageFile, CancellationToken cancellationToken)
+    {
+        this.DiscLoading?.Invoke(this, EventArgs.Empty);
 
-        await this.player.LoadAsync(disc, tracks, cancellationToken);
+        await this.player.ClearAsync(cancellationToken);
 
-        this.DiscLoaded?.Invoke(this, EventArgs.Empty);
+        var media = await new MediaLoader().LoadFromAsync(storageFile, cancellationToken);
 
-        this.PlaylistUpdated?.Invoke(this, EventArgs.Empty);
+        var albumName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(storageFile.Name));
 
-        var mruItem = this.mruService.FindItem(albumFilePath);
-        if (mruItem is not null)
-        {
-            var updatedMruItem = mruItem with
-            {
-                LastUpdated = DateTime.UtcNow,
-            };
+        // TODO: probably need to obtain a bookmark here for the moniker
+        string mruItemMoniker = storageFile.Path.ToString();
 
-            this.mruService.AddOrUpdateItem(updatedMruItem);
-        }
-        else
-        {
-            mruItem = new MruItem(
-                albumFilePath,
-                Path.GetFileNameWithoutExtension(albumFilePath),
-                string.Empty,
-                DateTime.UtcNow);
-
-            this.mruService.AddOrUpdateItem(mruItem);
-        }
-
-        _ = this.LoadExtrasAsync(albumFilePath, disc.Id, disc.CTDBToc, tracks, cancellationToken);
+        await this.PostLoadAsync(media, albumName, mruItemMoniker, cancellationToken);
     }
 
     public void Shutdown()
@@ -193,13 +179,13 @@ public sealed class MediaPlayerService : IMediaPlayerService
         this.player.Shutdown();
     }
 
-    private static (AudioPlayerDisc Disc, AudioPlayerDiscMetadata DiscMetadata, ImmutableArray<(AudioPlayerTrack PlayerTrack, AudioPlayerTrackMetadata TrackMetadata, IAlbumTrack AlbumTrack)> Tracks) Convert(IAlbumMedia media, string albumFilePath)
+    private static (AudioPlayerDisc Disc, AudioPlayerDiscMetadata DiscMetadata, ImmutableArray<(AudioPlayerTrack PlayerTrack, AudioPlayerTrackMetadata TrackMetadata, IAlbumTrack AlbumTrack)> Tracks) Convert(IAlbumMedia media, string name)
     {
         var disc = new AudioPlayerDisc()
         {
             Id = Guid.NewGuid(),
             CTDBToc = media.CTDBToc,
-            FilePath = albumFilePath,
+            Name = name,
         };
 
         var tracks = new List<(AudioPlayerTrack, AudioPlayerTrackMetadata, IAlbumTrack)>();
@@ -231,6 +217,50 @@ public sealed class MediaPlayerService : IMediaPlayerService
         return (disc, discMetadata, [.. tracks]);
     }
 
+    private async Task PostLoadAsync(IAlbumMedia media, string albumName, string mruItemMoniker, CancellationToken cancellationToken)
+    {
+        this.discMetadataCache.Clear();
+        this.trackMetadataCache.Clear();
+        this.lyricsCache.Clear();
+
+        var (disc, discMetadata, tracks) = Convert(media, albumName);
+        foreach (var track in tracks)
+        {
+            this.trackMetadataCache.AddOrUpdate(track.PlayerTrack.Id, track.TrackMetadata, (id, existing) => track.TrackMetadata);
+        }
+
+        this.discMetadataCache.AddOrUpdate(disc.Id, discMetadata, (id, existing) => discMetadata);
+
+        await this.player.LoadAsync(disc, tracks, cancellationToken);
+
+        this.DiscLoaded?.Invoke(this, EventArgs.Empty);
+
+        this.PlaylistUpdated?.Invoke(this, EventArgs.Empty);
+
+        var mruItem = this.mruService.FindItem(mruItemMoniker);
+        if (mruItem is not null)
+        {
+            var updatedMruItem = mruItem with
+            {
+                LastUpdated = DateTime.UtcNow,
+            };
+
+            this.mruService.AddOrUpdateItem(updatedMruItem);
+        }
+        else
+        {
+            mruItem = new MruItem(
+                mruItemMoniker,
+                albumName,
+                string.Empty,
+                DateTime.UtcNow);
+
+            this.mruService.AddOrUpdateItem(mruItem);
+        }
+
+        _ = this.LoadExtrasAsync(mruItemMoniker, disc.Id, disc.CTDBToc, tracks, cancellationToken);
+    }
+
     private void Player_PlaybackStateChanged(object? sender, EventArgs e)
     {
         this.PlaybackStateChanged?.Invoke(this, e);
@@ -247,7 +277,7 @@ public sealed class MediaPlayerService : IMediaPlayerService
     }
 
     private async Task LoadExtrasAsync(
-        string albumFilePath,
+        string mruItemMoniker,
         Guid discId,
         string toc,
         ImmutableArray<(AudioPlayerTrack PlayerTrack, AudioPlayerTrackMetadata TrackMetadata, IAlbumTrack AlbumTrack)> tracks,
@@ -255,7 +285,7 @@ public sealed class MediaPlayerService : IMediaPlayerService
     {
         if (this.localSettingsService.ReadSetting<bool?>(KnownSettingKeys.QueryMetadataOnline) == true)
         {
-            await this.LoadMetadataAsync(albumFilePath, discId, toc, tracks, cancellationToken);
+            await this.LoadMetadataAsync(mruItemMoniker, discId, toc, tracks, cancellationToken);
         }
 
         if (this.localSettingsService.ReadSetting<bool?>(KnownSettingKeys.QueryLyricsOnline) == true)
@@ -265,7 +295,7 @@ public sealed class MediaPlayerService : IMediaPlayerService
     }
 
     private async Task LoadMetadataAsync(
-        string albumFilePath,
+        string mruItemMoniker,
         Guid discId,
         string toc,
         ImmutableArray<(AudioPlayerTrack PlayerTrack, AudioPlayerTrackMetadata TrackMetadata, IAlbumTrack AlbumTrack)> tracks,
@@ -315,7 +345,7 @@ public sealed class MediaPlayerService : IMediaPlayerService
                 this.MetadataUpdated?.Invoke(this, new AudioPlayerTrackEventArgs(this.player.Tracks[i]));
             }
 
-            var mruItem = this.mruService.FindItem(albumFilePath);
+            var mruItem = this.mruService.FindItem(mruItemMoniker);
             if (mruItem is not null)
             {
                 var updatedMruItem = mruItem with
@@ -330,7 +360,7 @@ public sealed class MediaPlayerService : IMediaPlayerService
             else
             {
                 mruItem = new MruItem(
-                    albumFilePath,
+                    mruItemMoniker,
                     $"{discMetadata.AlbumPerformer} - {discMetadata.AlbumTitle}",
                     imageUrl ?? string.Empty,
                     DateTime.UtcNow);

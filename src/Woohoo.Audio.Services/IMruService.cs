@@ -15,9 +15,9 @@ public interface IMruService
 
     ImmutableArray<MruItem> GetItems();
 
-    void RemoveItem(string filePath);
+    void RemoveItem(string itemMoniker);
 
     void AddOrUpdateItem(MruItem item);
 
-    MruItem? FindItem(string filePath);
+    MruItem? FindItem(string itemMoniker);
 }

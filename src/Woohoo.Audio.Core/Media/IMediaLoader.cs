@@ -3,7 +3,11 @@
 
 namespace Woohoo.Audio.Core.Media;
 
+using Woohoo.Audio.Core.Storage;
+
 public interface IMediaLoader
 {
     Task<IAlbumMedia> LoadFromAsync(string filePath, CancellationToken cancellationToken);
+
+    Task<IAlbumMedia> LoadFromAsync(IXPlatStorageFile storageFile, CancellationToken cancellationToken);
 }

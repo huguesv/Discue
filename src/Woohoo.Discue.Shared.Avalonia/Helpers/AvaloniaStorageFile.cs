@@ -7,7 +7,7 @@ using System;
 using global::Avalonia.Platform.Storage;
 using Woohoo.Audio.Core.Storage;
 
-internal sealed class AvaloniaStorageFile : IXPlatStorageFile
+public sealed class AvaloniaStorageFile : IXPlatStorageFile
 {
     private readonly IStorageFile storageFile;
 

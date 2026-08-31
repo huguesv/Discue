@@ -269,7 +269,7 @@ public sealed partial class PlaybackViewModel : ObservableRecipient
                 var disc = this.mediaPlayerService.FindDisc(track.DiscId);
                 if (disc is not null)
                 {
-                    this.AlbumFileName = Path.GetFileNameWithoutExtension(disc.FilePath);
+                    this.AlbumFileName = disc.Name;
                 }
                 else
                 {

@@ -10,6 +10,7 @@ using Woohoo.Audio.Core.Internal.Cue;
 using Woohoo.Audio.Core.Internal.Cue.Serialization;
 using Woohoo.Audio.Core.Internal.CueToolsDatabase;
 using Woohoo.Audio.Core.Internal.IO;
+using Woohoo.Audio.Core.Storage;
 using Woohoo.IO.Compression.Chd;
 
 public class MediaLoader : IMediaLoader
@@ -37,6 +38,31 @@ public class MediaLoader : IMediaLoader
         else if (string.Equals(ext, ".7z", StringComparison.OrdinalIgnoreCase))
         {
             return await OpenSevenZipAsync(filePath, cancellationToken);
+        }
+
+        throw new MediaLoadException("Unsupported file format.");
+    }
+
+    public async Task<IAlbumMedia> LoadFromAsync(IXPlatStorageFile storageFile, CancellationToken cancellationToken)
+    {
+        string ext = Path.GetExtension(storageFile.Name);
+        if (string.Equals(ext, ".cue", StringComparison.OrdinalIgnoreCase))
+        {
+            // TODO: implement this
+            throw new NotSupportedException("Mobile cue support not implemented yet.");
+        }
+        else if (string.Equals(ext, ".zip", StringComparison.OrdinalIgnoreCase))
+        {
+            // TODO: implement this
+            throw new NotSupportedException("Mobile zip support not implemented yet.");
+        }
+        else if (string.Equals(ext, ".chd", StringComparison.OrdinalIgnoreCase))
+        {
+            return await OpenChdAsync(storageFile);
+        }
+        else if (string.Equals(ext, ".7z", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new NotSupportedException("Not implemented yet.");
         }
 
         throw new MediaLoadException("Unsupported file format.");
@@ -134,6 +160,18 @@ public class MediaLoader : IMediaLoader
     private static IAlbumMedia OpenChd(string filePath)
     {
         var chdFile = new ChdFile(filePath);
+        return CreateChdCdRom(Path.GetFileNameWithoutExtension(filePath), chdFile);
+    }
+
+    private static async Task<IAlbumMedia> OpenChdAsync(IXPlatStorageFile storageFile)
+    {
+        var stream = await storageFile.OpenReadAsync();
+        var chdFile = new ChdFile(stream, keepOpen: false);
+        return CreateChdCdRom(Path.GetFileNameWithoutExtension(storageFile.Name), chdFile);
+    }
+
+    private static IAlbumMedia CreateChdCdRom(string albumName, ChdFile chdFile)
+    {
         var cdRomFile = new CdRomFile(chdFile);
         var albumTracks = new List<IAlbumTrack>();
         var sectors = new List<int>();
@@ -154,7 +192,7 @@ public class MediaLoader : IMediaLoader
 
             var albumTrack = new ChdAlbumTrack(
                 cdRomFile,
-                Path.GetFileNameWithoutExtension(filePath),
+                albumName,
                 i,
                 track.TrackType,
                 (int)(track.Frames * track.DataSize));

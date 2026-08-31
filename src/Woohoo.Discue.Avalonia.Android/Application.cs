@@ -7,6 +7,11 @@ using global::Android.App;
 using global::Android.Runtime;
 using global::Avalonia;
 using global::Avalonia.Android;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Woohoo.Audio.Core.Playback;
+using Woohoo.Audio.Playback.Android;
+using Woohoo.Audio.Services;
 
 [Application]
 public class Application : AvaloniaAndroidApplication<App>
@@ -16,7 +21,7 @@ public class Application : AvaloniaAndroidApplication<App>
     {
         App.RegisterPlatformServices = services =>
         {
-            // TODO: Add any android specific services here
+            services.Replace(ServiceDescriptor.Singleton<IAudioPlayerProvider, AndroidAudioPlayerProvider>());
         };
     }
 
@@ -24,5 +29,12 @@ public class Application : AvaloniaAndroidApplication<App>
     {
         return base.CustomizeAppBuilder(builder)
             .WithInterFont();
+    }
+
+    private class AndroidAudioPlayerProvider : IAudioPlayerProvider
+    {
+        private readonly AndroidAudioPlayer player = new();
+
+        public IAudioPlayer GetAudioPlayer() => this.player;
     }
 }

@@ -17,7 +17,7 @@ public sealed class LocalStorageFolder : IXPlatStorageFolder
 
     public string Name => System.IO.Path.GetFileName(this.absolutePath);
 
-    public Uri Path => throw new NotImplementedException();
+    public Uri Path => new Uri(this.absolutePath);
 
     public Task<XPlatStorageItemProperties> GetBasicPropertiesAsync()
     {

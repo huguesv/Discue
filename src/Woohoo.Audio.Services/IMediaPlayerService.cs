@@ -6,6 +6,7 @@ namespace Woohoo.Audio.Services;
 using System.Collections.Immutable;
 using Woohoo.Audio.Core.Lyrics;
 using Woohoo.Audio.Core.Playback;
+using Woohoo.Audio.Core.Storage;
 
 public interface IMediaPlayerService
 {
@@ -59,6 +60,8 @@ public interface IMediaPlayerService
 
     Task LoadFromFileAsync(string albumFilePath, CancellationToken cancellationToken);
 
+    Task LoadFromStorageAsync(IXPlatStorageFile storageFile, CancellationToken cancellationToken);
+
     void NextTrack();
 
     void Play(Guid trackId);
@@ -74,4 +77,6 @@ public interface IMediaPlayerService
     void SeekTo(TimeSpan span);
 
     void Shutdown();
+
+    void InitializePlayer();
 }

@@ -3,14 +3,20 @@
 
 namespace Woohoo.Sdl3;
 
+using SDL;
 using Woohoo.Sdl3.Internal.Interop;
 
 public static class SdlAudio
 {
     public static void Initialize()
     {
+        SDL3.SDL_SetMainReady();
+
         if (!SDL.SDL3.SDL_Init(SDL.SDL_InitFlags.SDL_INIT_AUDIO))
         {
+            string? errorMessage = SDL3.SDL_GetError();
+            Console.WriteLine($"SDL_Init failed: {errorMessage}");
+
             SdlException.Throw(nameof(SDL.SDL3.SDL_Init));
         }
     }

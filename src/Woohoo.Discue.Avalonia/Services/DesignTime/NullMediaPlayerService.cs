@@ -7,6 +7,7 @@ using System;
 using System.Collections.Immutable;
 using Woohoo.Audio.Core.Lyrics;
 using Woohoo.Audio.Core.Playback;
+using Woohoo.Audio.Core.Storage;
 using Woohoo.Audio.Services;
 
 internal class NullMediaPlayerService : IMediaPlayerService
@@ -79,7 +80,16 @@ internal class NullMediaPlayerService : IMediaPlayerService
         throw new NotImplementedException();
     }
 
+    public void InitializePlayer()
+    {
+    }
+
     public Task LoadFromFileAsync(string albumFilePath, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task LoadFromStorageAsync(IXPlatStorageFile storageFile, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

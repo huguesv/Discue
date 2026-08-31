@@ -36,6 +36,8 @@ public interface IAudioPlayer
 
     IAudioPlayerVisualization Visualization { get; }
 
+    void Initialize();
+
     AudioPlayerTrack? FindTrack(Guid id);
 
     AudioPlayerDisc? FindDisc(Guid id);

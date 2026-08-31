@@ -21,6 +21,32 @@
         </ContentPage.Icon>
     </local:HomePage>
 
+    <local:NowPlayingPage Header="Now Playing">
+        <ContentPage.Icon>
+            <PathIcon Data="{StaticResource SettingsIcon}" />
+        </ContentPage.Icon>
+    </local:NowPlayingPage>
+
+<!--
+    <local:VisualizationPage Header="Visualization">
+        <ContentPage.Icon>
+            <PathIcon Data="{StaticResource SettingsIcon}" />
+        </ContentPage.Icon>
+    </local:VisualizationPage>
+-->
+
+    <local:LyricsPage Header="Lyrics">
+        <ContentPage.Icon>
+            <PathIcon Data="{StaticResource SettingsIcon}" />
+        </ContentPage.Icon>
+    </local:LyricsPage>
+
+    <local:PlaylistPage Header="Playlist">
+        <ContentPage.Icon>
+            <PathIcon Data="{StaticResource SettingsIcon}" />
+        </ContentPage.Icon>
+    </local:PlaylistPage>
+
     <local:SettingsPage Header="Settings">
         <ContentPage.Icon>
             <PathIcon Data="{StaticResource SettingsIcon}" />
