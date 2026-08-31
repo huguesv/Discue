@@ -3,27 +3,9 @@
 
 namespace Woohoo.Audio.CueToolsDatabase.Web.Models;
 
-using System;
-using System.Xml.Serialization;
-
-[Serializable]
-public sealed class CTDBResponseMetaRelease
+public sealed record class CTDBResponseMetaRelease
 {
-    public CTDBResponseMetaRelease()
-    {
-        this.Date = string.Empty;
-        this.Country = string.Empty;
-    }
+    public string Date { get; init; } = string.Empty;
 
-    public CTDBResponseMetaRelease(CTDBResponseMetaRelease src)
-    {
-        this.Date = src.Date;
-        this.Country = src.Country;
-    }
-
-    [XmlAttribute("date")]
-    public string Date { get; set; }
-
-    [XmlAttribute("country")]
-    public string Country { get; set; }
+    public string Country { get; init; } = string.Empty;
 }

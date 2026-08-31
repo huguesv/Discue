@@ -3,42 +3,15 @@
 
 namespace Woohoo.Audio.CueToolsDatabase.Web.Models;
 
-using System;
-using System.Xml.Serialization;
-
-[Serializable]
-public sealed class CTDBResponseMetaImage
+public sealed record class CTDBResponseMetaImage
 {
-    public CTDBResponseMetaImage()
-    {
-        this.Uri = string.Empty;
-        this.Uri150 = string.Empty;
-        this.Height = 0;
-        this.Width = 0;
-        this.Primary = false;
-    }
+    public string Uri { get; init; } = string.Empty;
 
-    public CTDBResponseMetaImage(CTDBResponseMetaImage src)
-    {
-        this.Uri = src.Uri;
-        this.Uri150 = src.Uri150;
-        this.Height = src.Height;
-        this.Width = src.Width;
-        this.Primary = src.Primary;
-    }
+    public string Uri150 { get; init; } = string.Empty;
 
-    [XmlAttribute("uri")]
-    public string Uri { get; set; }
+    public int Height { get; init; }
 
-    [XmlAttribute("uri150")]
-    public string Uri150 { get; set; }
+    public int Width { get; init; }
 
-    [XmlAttribute("height")]
-    public int Height { get; set; }
-
-    [XmlAttribute("width")]
-    public int Width { get; set; }
-
-    [XmlAttribute("primary")]
-    public bool Primary { get; set; }
+    public bool Primary { get; init; }
 }

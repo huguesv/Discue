@@ -9,4 +9,6 @@ using Woohoo.Audio.CueToolsDatabase.Web.Models;
 public interface ICTDBWebClient
 {
     Task<CTDBResponse?> QueryAsync(string toc, CancellationToken cancellationToken);
+
+    Task<string?> QueryRawAsync(string toc, CancellationToken cancellationToken);
 }
