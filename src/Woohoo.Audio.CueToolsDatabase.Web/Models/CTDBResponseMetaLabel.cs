@@ -3,27 +3,9 @@
 
 namespace Woohoo.Audio.CueToolsDatabase.Web.Models;
 
-using System;
-using System.Xml.Serialization;
-
-[Serializable]
-public sealed class CTDBResponseMetaLabel
+public sealed record class CTDBResponseMetaLabel
 {
-    public CTDBResponseMetaLabel()
-    {
-        this.Name = string.Empty;
-        this.CatNo = string.Empty;
-    }
+    public string Name { get; init; } = string.Empty;
 
-    public CTDBResponseMetaLabel(CTDBResponseMetaLabel src)
-    {
-        this.Name = src.Name;
-        this.CatNo = src.CatNo;
-    }
-
-    [XmlAttribute("name")]
-    public string Name { get; set; }
-
-    [XmlAttribute("catno")]
-    public string CatNo { get; set; }
+    public string CatNo { get; init; } = string.Empty;
 }

@@ -3,53 +3,25 @@
 
 namespace Woohoo.Audio.CueToolsDatabase.Web.Models;
 
-using System;
-using System.Xml.Serialization;
-
-[Serializable]
-public sealed class CTDBResponseEntry
+public sealed record class CTDBResponseEntry
 {
-    public CTDBResponseEntry()
-    {
-        this.Id = 0;
-        this.Crc32 = string.Empty;
-        this.Confidence = 0;
-        this.Npar = 0;
-        this.Stride = 0;
-        this.HasParity = string.Empty;
-        this.Parity = string.Empty;
-        this.Syndrome = string.Empty;
-        this.TrackCrcs = string.Empty;
-        this.Toc = string.Empty;
-    }
+    public long Id { get; init; }
 
-    [XmlAttribute("id")]
-    public long Id { get; set; }
+    public string Crc32 { get; init; } = string.Empty;
 
-    [XmlAttribute("crc32")]
-    public string Crc32 { get; set; }
+    public int Confidence { get; init; }
 
-    [XmlAttribute("confidence")]
-    public int Confidence { get; set; }
+    public int Npar { get; init; }
 
-    [XmlAttribute("npar")]
-    public int Npar { get; set; }
+    public int Stride { get; init; }
 
-    [XmlAttribute("stride")]
-    public int Stride { get; set; }
+    public string HasParity { get; init; } = string.Empty;
 
-    [XmlAttribute("hasparity")]
-    public string HasParity { get; set; }
+    public string Parity { get; init; } = string.Empty;
 
-    [XmlAttribute("parity")]
-    public string Parity { get; set; }
+    public string Syndrome { get; init; } = string.Empty;
 
-    [XmlAttribute("syndrome")]
-    public string Syndrome { get; set; }
+    public string TrackCrcs { get; init; } = string.Empty;
 
-    [XmlAttribute("trackcrcs")]
-    public string TrackCrcs { get; set; }
-
-    [XmlAttribute("toc")]
-    public string Toc { get; set; }
+    public string Toc { get; init; } = string.Empty;
 }

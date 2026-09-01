@@ -25,19 +25,22 @@ public sealed class CTDBCachingWebClient : ICTDBWebClient
 
         if (cache.Exists &&
             cache.Age < CacheExpirationAge &&
-            cache.TryReadFromCache(out var cachedResponse))
+            cache.TryRead(out var cachedResponse))
         {
             return cachedResponse;
         }
 
         try
         {
-            var response = await this.innerClient.QueryAsync(toc, cancellationToken);
-            if (response is not null)
+            var raw = await this.innerClient.QueryRawAsync(toc, cancellationToken);
+            if (raw is null)
             {
-                cache.WriteToCache(response);
+                return null;
             }
 
+            cache.WriteRaw(raw);
+
+            var response = CTDBSerialization.Deserialize(new StringReader(raw));
             return response;
         }
         catch
@@ -46,12 +49,17 @@ public sealed class CTDBCachingWebClient : ICTDBWebClient
             // Client/server may be offline or whatever.
             // Use the expired cache when available.
             if (cache.Exists &&
-                cache.TryReadFromCache(out var expiredCachedResponse))
+                cache.TryRead(out var expiredCachedResponse))
             {
                 return expiredCachedResponse;
             }
 
             throw;
         }
+    }
+
+    public Task<string?> QueryRawAsync(string toc, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

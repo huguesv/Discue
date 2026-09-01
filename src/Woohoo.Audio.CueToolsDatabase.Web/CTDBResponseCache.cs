@@ -26,14 +26,14 @@ internal sealed class CTDBResponseCache
         get => File.Exists(this.filePath);
     }
 
-    public bool TryReadFromCache(out CTDBResponse? response)
+    public bool TryRead(out CTDBResponse? response)
     {
-        return TryReadFromCache(this.filePath, out response);
+        return TryRead(this.filePath, out response);
     }
 
-    public void WriteToCache(CTDBResponse result)
+    public void WriteRaw(string result)
     {
-        WriteToCache(this.filePath, result);
+        WriteRaw(this.filePath, result);
     }
 
     private static string CreateMD5(string input)
@@ -69,14 +69,15 @@ internal sealed class CTDBResponseCache
         return DateTime.UtcNow - cacheFileInfo.LastWriteTimeUtc;
     }
 
-    private static bool TryReadFromCache(string cacheFilePath, out CTDBResponse? response)
+    private static bool TryRead(string cacheFilePath, out CTDBResponse? response)
     {
         response = null;
 
         try
         {
             using var fileStream = File.OpenRead(cacheFilePath);
-            response = CTDBSerialization.Deserialize(fileStream) as CTDBResponse;
+            using var streamReader = new StreamReader(fileStream);
+            response = CTDBSerialization.Deserialize(streamReader);
             return response is not null;
         }
         catch
@@ -88,7 +89,7 @@ internal sealed class CTDBResponseCache
         return false;
     }
 
-    private static void WriteToCache(string cacheFilePath, CTDBResponse result)
+    private static void WriteRaw(string cacheFilePath, string result)
     {
         try
         {
@@ -100,8 +101,7 @@ internal sealed class CTDBResponseCache
 
             Directory.CreateDirectory(folderPath);
 
-            using var fileStream = File.Create(cacheFilePath);
-            CTDBSerialization.Serialize(fileStream, result);
+            File.WriteAllText(cacheFilePath, result);
         }
         catch
         {
