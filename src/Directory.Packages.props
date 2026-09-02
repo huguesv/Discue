@@ -27,7 +27,7 @@
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Dapper.AOT" Version="1.0.52" />
     <PackageVersion Include="FftSharp" Version="2.2.0" />
-    <PackageVersion Include="FluentIcons.Avalonia" Version="2.1.337" />
+    <PackageVersion Include="FluentIcons.Avalonia" Version="2.1.339.1" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
