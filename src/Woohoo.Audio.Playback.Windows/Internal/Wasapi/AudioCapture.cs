@@ -163,12 +163,22 @@ internal sealed class AudioCapture
                     &emptyGuid);
 
                 Guid iidIAudioCaptureClient = typeof(IAudioCaptureClient).GUID;
-                this.audioClient.GetService(&iidIAudioCaptureClient, out object occ);
-                this.captureClient = (IAudioCaptureClient)occ;
+                this.audioClient.GetService(&iidIAudioCaptureClient, out void* ppv);
 
-                if (this.captureClient == null)
+                try
                 {
-                    throw new Exception("Failed to get capture client");
+                    this.captureClient = (IAudioCaptureClient)Marshal.GetObjectForIUnknown((IntPtr)ppv);
+                    if (this.captureClient == null)
+                    {
+                        throw new Exception("Failed to get capture client");
+                    }
+                }
+                finally
+                {
+                    if (ppv != null)
+                    {
+                        Marshal.Release((IntPtr)ppv);
+                    }
                 }
             }
             finally
