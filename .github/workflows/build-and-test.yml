@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     env:
-      dotnetActionVersion: '10.0.x'
+      dotnetActionVersion: '11.0.x'
       solutionFile: Discue-XPlat.slnx
 
     steps:

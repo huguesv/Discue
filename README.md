@@ -170,7 +170,7 @@ You can optionally use a local version of the LRCLIB database:
 
 ## Building
 
-Install the [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
+Install the [.NET 11 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/11.0).
 
 To build the application, use the following command from the `\src` folder:
 

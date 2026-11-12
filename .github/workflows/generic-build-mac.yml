@@ -45,8 +45,8 @@ jobs:
         dotnet-runtime: [osx-arm64]
     runs-on: macos-latest
     env:
-      dotnet-action-version: '10.0.x'
-      dotnet-build-version: 'net10.0'
+      dotnet-action-version: '11.0.x'
+      dotnet-build-version: 'net11.0'
       publish-folder: '${{ github.workspace }}/out/publish'
       bundle-artifact-name: ${{ inputs.app-executable-name }}-${{ matrix.dotnet-runtime }}-app
       pkg-artifact-name: ${{ inputs.app-executable-name }}-${{ matrix.dotnet-runtime }}-pkg

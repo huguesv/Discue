@@ -29,8 +29,8 @@ jobs:
         dotnet-runtime: [linux-x64, linux-arm64]
     runs-on: ubuntu-latest
     env:
-      dotnet-action-version: '10.0.x'
-      dotnet-build-version: 'net10.0'
+      dotnet-action-version: '11.0.x'
+      dotnet-build-version: 'net11.0'
       publish-folder: '${{ github.workspace }}/out/publish/${{ matrix.dotnet-runtime }}'
       artifact-name: ${{ inputs.app-executable-name }}-${{ matrix.dotnet-runtime }}
       release-name: ${{ inputs.app-executable-name }}-${{ inputs.tag-name }}-${{ matrix.dotnet-runtime }}
