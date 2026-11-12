@@ -167,7 +167,7 @@ internal sealed class AudioCapture
 
                 try
                 {
-                    this.captureClient = (IAudioCaptureClient)Marshal.GetObjectForIUnknown((IntPtr)ppv);
+                    this.captureClient = (IAudioCaptureClient)Marshal.GetObjectForIUnknown((nint)ppv);
                     if (this.captureClient == null)
                     {
                         throw new Exception("Failed to get capture client");
@@ -177,13 +177,13 @@ internal sealed class AudioCapture
                 {
                     if (ppv != null)
                     {
-                        Marshal.Release((IntPtr)ppv);
+                        Marshal.Release((nint)ppv);
                     }
                 }
             }
             finally
             {
-                Marshal.FreeCoTaskMem((IntPtr)formatPtr);
+                Marshal.FreeCoTaskMem((nint)formatPtr);
             }
         }
         catch (Exception ex)

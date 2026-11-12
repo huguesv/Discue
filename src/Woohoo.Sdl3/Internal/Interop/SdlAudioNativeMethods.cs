@@ -17,7 +17,7 @@ internal static partial class SdlAudioNativeMethods
     private const string NativeLibName = "SDL3";
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SDL_AudioStreamCallback(IntPtr userdata, IntPtr stream, int additional_amount, int total_amount);
+    public delegate void SDL_AudioStreamCallback(nint userdata, nint stream, int additional_amount, int total_amount);
 
     public enum SDL_AudioFormat
     {
@@ -39,11 +39,11 @@ internal static partial class SdlAudioNativeMethods
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial IntPtr SDL_malloc(UIntPtr size);
+    public static partial nint SDL_malloc(nuint size);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void SDL_free(IntPtr mem);
+    public static partial void SDL_free(nint mem);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -96,67 +96,67 @@ internal static partial class SdlAudioNativeMethods
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_PutAudioStreamData(IntPtr stream, IntPtr buf, int len);
+    public static partial SDLBool SDL_PutAudioStreamData(nint stream, nint buf, int len);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial int SDL_GetAudioStreamData(IntPtr stream, IntPtr buf, int len);
+    public static partial int SDL_GetAudioStreamData(nint stream, nint buf, int len);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial int SDL_GetAudioStreamAvailable(IntPtr stream);
+    public static partial int SDL_GetAudioStreamAvailable(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial int SDL_GetAudioStreamQueued(IntPtr stream);
+    public static partial int SDL_GetAudioStreamQueued(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_FlushAudioStream(IntPtr stream);
+    public static partial SDLBool SDL_FlushAudioStream(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_ClearAudioStream(IntPtr stream);
+    public static partial SDLBool SDL_ClearAudioStream(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial float SDL_GetAudioStreamFrequencyRatio(IntPtr stream);
+    public static partial float SDL_GetAudioStreamFrequencyRatio(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_SetAudioStreamFrequencyRatio(IntPtr stream, float ratio);
+    public static partial SDLBool SDL_SetAudioStreamFrequencyRatio(nint stream, float ratio);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial float SDL_GetAudioStreamGain(IntPtr stream);
+    public static partial float SDL_GetAudioStreamGain(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_SetAudioStreamGain(IntPtr stream, float gain);
+    public static partial SDLBool SDL_SetAudioStreamGain(nint stream, float gain);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_PauseAudioStreamDevice(IntPtr stream);
+    public static partial SDLBool SDL_PauseAudioStreamDevice(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_ResumeAudioStreamDevice(IntPtr stream);
+    public static partial SDLBool SDL_ResumeAudioStreamDevice(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_AudioStreamDevicePaused(IntPtr stream);
+    public static partial SDLBool SDL_AudioStreamDevicePaused(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_LockAudioStream(IntPtr stream);
+    public static partial SDLBool SDL_LockAudioStream(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDLBool SDL_UnlockAudioStream(IntPtr stream);
+    public static partial SDLBool SDL_UnlockAudioStream(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void SDL_DestroyAudioStream(IntPtr stream);
+    public static partial void SDL_DestroyAudioStream(nint stream);
 
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -211,6 +211,6 @@ internal static partial class SdlAudioNativeMethods
         /// </summary>
         /// <returns>A managed string.</returns>
         public static string? ConvertToManaged(byte* unmanaged)
-            => Marshal.PtrToStringUTF8((IntPtr)unmanaged);
+            => Marshal.PtrToStringUTF8((nint)unmanaged);
     }
 }

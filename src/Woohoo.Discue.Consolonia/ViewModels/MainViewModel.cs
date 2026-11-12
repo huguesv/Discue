@@ -125,7 +125,7 @@ public partial class MainViewModel : ObservableObject
             allowMultiple: false,
             [
                 new("Disc Image Files") { Patterns = ["*.cue", "*.zip", "*.chd"] },
-                new("All Files") { Patterns = ["*.*"] }
+                new("All Files") { Patterns = ["*.*"] },
             ]);
 
         if (filePaths.Length > 0)

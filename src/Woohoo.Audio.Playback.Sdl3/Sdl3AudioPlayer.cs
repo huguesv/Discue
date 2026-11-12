@@ -82,8 +82,8 @@ public sealed class Sdl3AudioPlayer : IAudioPlayer
 
     public AudioPlayerTrack? ActiveTrack
         => this.activeTrackIndex >= 0 && this.activeTrackIndex < this.playlistTracks.Count
-        ? this.playlistTracks[this.activeTrackIndex]
-        : null;
+            ? this.playlistTracks[this.activeTrackIndex]
+            : null;
 
     public bool IsNextTrackEnabled => this.activeTrackIndex >= 0 && this.activeTrackIndex < this.playlistTracks.Count - 1;
 

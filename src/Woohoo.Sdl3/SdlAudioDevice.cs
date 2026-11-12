@@ -25,7 +25,11 @@ public class SdlAudioDevice
     /// </remarks>
     public float Gain
     {
-        get => SdlAudioNativeMethods.SDL_GetAudioDeviceGain(this.Id);
+        get
+        {
+            return SdlAudioNativeMethods.SDL_GetAudioDeviceGain(this.Id);
+        }
+
         set
         {
             if (!SdlAudioNativeMethods.SDL_SetAudioDeviceGain(this.Id, value))

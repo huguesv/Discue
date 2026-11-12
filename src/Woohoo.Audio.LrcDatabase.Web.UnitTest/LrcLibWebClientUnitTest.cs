@@ -34,7 +34,7 @@ public partial class LrcLibWebClientUnitTest
                 new KeyValuePair<string, string>("track_name", "Live"),
                 new KeyValuePair<string, string>("album_name", "Baldur's Gate 3 (Original Game Soundtrack)"),
                 new KeyValuePair<string, string>("duration", "233"),
-                ])
+            ])
             .Respond(HttpStatusCode.OK, "application/json", json);
 
         // Act

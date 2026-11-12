@@ -76,20 +76,20 @@ internal static class TitleBarHelper
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
             if (hwnd == GetActiveWindow())
             {
-                SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
-                SendMessage(hwnd, WMACTIVATE, WAACTIVE, IntPtr.Zero);
+                SendMessage(hwnd, WMACTIVATE, WAINACTIVE, nint.Zero);
+                SendMessage(hwnd, WMACTIVATE, WAACTIVE, nint.Zero);
             }
             else
             {
-                SendMessage(hwnd, WMACTIVATE, WAACTIVE, IntPtr.Zero);
-                SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
+                SendMessage(hwnd, WMACTIVATE, WAACTIVE, nint.Zero);
+                SendMessage(hwnd, WMACTIVATE, WAINACTIVE, nint.Zero);
             }
         }
     }
 
     [DllImport("user32.dll")]
-    private static extern IntPtr GetActiveWindow();
+    private static extern nint GetActiveWindow();
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
+    private static extern nint SendMessage(nint hWnd, int msg, int wParam, nint lParam);
 }

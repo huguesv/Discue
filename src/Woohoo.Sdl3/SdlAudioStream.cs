@@ -15,7 +15,7 @@ public class SdlAudioStream : IDisposable
 
     private SdlAudioStream(nint stream, StreamCallback callback)
     {
-        if (stream == IntPtr.Zero)
+        if (stream == nint.Zero)
         {
             throw new ArgumentNullException(nameof(stream));
         }
@@ -302,7 +302,7 @@ public class SdlAudioStream : IDisposable
         var callback = new StreamCallback(audioRequest);
 
         var stream = SdlAudioNativeMethods.SDL_OpenAudioDeviceStream(device.Id, ref spec, callback.SdlAudioCallback, 0);
-        if (stream == IntPtr.Zero)
+        if (stream == nint.Zero)
         {
             SdlException.Throw(nameof(SdlAudioNativeMethods.SDL_OpenAudioDeviceStream));
         }
@@ -349,7 +349,7 @@ public class SdlAudioStream : IDisposable
             this.parentStreamDevice = device;
         }
 
-        private void SdlAudioCallbackFunction(IntPtr userdata, IntPtr stream, int additionalAmount, int totalAmount)
+        private void SdlAudioCallbackFunction(nint userdata, nint stream, int additionalAmount, int totalAmount)
         {
             if (this.parentStreamDevice is null)
             {

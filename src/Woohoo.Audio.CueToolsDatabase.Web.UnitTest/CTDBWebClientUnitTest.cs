@@ -23,7 +23,7 @@ public class CTDBWebClientUnitTest
                 new KeyValuePair<string, string>("fuzzy", "1"),
                 new KeyValuePair<string, string>("metadata", "extensive"),
                 new KeyValuePair<string, string>("toc", "0:21906:39281:56437:74243:88808:100823:115032:132582:148007:168265:192424:208167:224237:241505:261364:283698:303479"),
-                ])
+            ])
             .Respond(HttpStatusCode.OK, "application/xml", xml);
 
         // Act

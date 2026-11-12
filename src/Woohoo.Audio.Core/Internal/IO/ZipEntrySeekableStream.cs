@@ -35,7 +35,11 @@ internal class ZipEntrySeekableStream : Stream
 
     public override long Position
     {
-        get => this.position;
+        get
+        {
+            return this.position;
+        }
+
         set
         {
             if (this.position != value)

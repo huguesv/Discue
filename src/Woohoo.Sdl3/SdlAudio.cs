@@ -73,7 +73,7 @@ public static class SdlAudio
         uint[] result = new uint[count];
         unsafe
         {
-            uint* ptr = (uint*)new IntPtr(pointer).ToPointer();
+            uint* ptr = (uint*)new nint(pointer).ToPointer();
             for (int i = 0; i < count; i++)
             {
                 result[i] = ptr[i];
