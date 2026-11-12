@@ -4,12 +4,12 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="12.1.5" />
+    <PackageVersion Include="Avalonia" Version="12.1.6" />
     <PackageVersion Include="Avalonia.Controls.ItemsRepeater" Version="12.0.0" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.1.5" />
-    <PackageVersion Include="Avalonia.Skia" Version="12.1.5" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.5" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.5" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.6" />
+    <PackageVersion Include="Avalonia.Skia" Version="12.1.6" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.6" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.6" />
     <PackageVersion Include="AwesomeAssertions" Version="9.6.0" />
     <PackageVersion Include="AwesomeAssertions.Analyzers" Version="9.0.8" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
@@ -48,7 +48,7 @@
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.154.0" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.156.0" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="System.CommandLine" Version="3.0.0" />
     <PackageVersion Include="WinUIEx" Version="2.9.3" />
