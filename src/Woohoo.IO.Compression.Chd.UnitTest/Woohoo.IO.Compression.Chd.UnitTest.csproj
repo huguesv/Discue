@@ -21,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="AwesomeAssertions" />
     <PackageReference Include="coverlet.MTP" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Woohoo.Security.Cryptography" />
     <PackageReference Include="xunit.runner.visualstudio">
